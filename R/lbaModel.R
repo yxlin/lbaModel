@@ -69,7 +69,6 @@ NULL
 #'   accumulators = c("r1", "r2"),
 #'   type = "lba"
 #' )
-#' 
 #' }
 #'
 #' #---------------------------------------
@@ -78,7 +77,7 @@ NULL
 #' pop_scale <- c(A = 2, B = .2, mean_v.true = .25, mean_v.false = .1, 
 #'                t0 = 0.01)
 #' 
-#' #' if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
+#' if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
 #' 
 #' BuildPrior <- getFromNamespace("BuildPrior", "ggdmcPrior")
 #' 
