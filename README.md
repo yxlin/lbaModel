@@ -2,11 +2,7 @@
 lbaModel provides density, distribution and random generation functions for the Linear Ballistic Accumulator (LBA) model. Supports model specification, parameter estimation, and likelihood computation.
 
 # Getting Started
-<<<<<<< HEAD
 Although the package is primarily designed to support the ggdmc framework, it can also be applied to other use cases.
-=======
-The package is mainly to support ggdmc, so you can use it together with other ggdmc supporting packages.
->>>>>>> 41bef569990fe0630c3041017163ba2935486e74
 
 ```
 # A minimal LBA model
@@ -155,11 +151,6 @@ dev.off()
 # Prerequisites
 R (>= 3.3.0), ggdmcPrior, ggdmcModel, Rcpp (>= 1.0.7), RcppArmadillo (>= 0.10.7.5.0), and ggdmcHeaders.
 
-<<<<<<< HEAD
-=======
-See DESCRIPTION for details
-
->>>>>>> 41bef569990fe0630c3041017163ba2935486e74
 # Installation
 
 From CRAN:
