@@ -4,7 +4,7 @@ Sys.setenv("R_TESTS" = "")
 
 library(testthat)
 library(lbaModel)
-library(ggdmc)
+
 cat("\nRunning testthat in the directory: ")
 cat(getwd(), "\n")
 

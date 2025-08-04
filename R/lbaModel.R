@@ -232,8 +232,8 @@ NULL
 #' times, useful for model validation and goodness-of-fit tests}
 #'   \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic 
 #' purposes and prediction}
-#'   \item{`theoretical_plba`}{Computes the theoretical CDF for model validation 
-#' and comparison with empirical data}
+#'   \item{`theoretical_plba`}{Computes the theoretical CDF for model 
+#' validation and comparison with empirical data}
 #' }
 #'
 #' @examples
@@ -345,13 +345,6 @@ NULL
 #'   st0 = c(0.0, 0.0),
 #'   t0 = c(0.2, 0.2)
 #' )
-#' param_list2mat <- function(param_list) {
-#'   n_row <- length(param_list[[1]])
-#'   n_col <- length(param_list)
-#'   out <- matrix(NA, nrow = n_row, ncol = n_col)
-#'   for (i in seq_len(n_col)) out[, i] <- param_list[[i]]
-#'   t(out)
-#' }
 #' params <- param_list2mat(params_tmp)
 #' nv <- ncol(params)
 #' is_positive_drift <- rep(TRUE, nv)

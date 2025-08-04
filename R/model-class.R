@@ -110,7 +110,7 @@ setLBA <- function(
         tmp_params <- rprior(pop_dist, n = 1)
         is_valid <- validate_lba_parameters(rt_model, tmp_params[, 1])
         if (is_valid) {
-          message("After", attempt, "attempts, I found a new set of parameters for Subject", i, "\n")
+          message("After ", attempt, " attempts, I found a new set of parameters for Subject ", i, "\n")
 
           parameter_matrix[i, ] <- tmp_params[, 1]
           all_valid[i] <- is_valid

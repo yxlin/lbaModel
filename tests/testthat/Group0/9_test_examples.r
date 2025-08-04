@@ -1,8 +1,8 @@
+rm(list = ls())
+require(lbaModel)
 ###################################################
 # Example 1: theoretical_dlba and theoretical_plba
 ###################################################
-# ... [param_list2mat function and setup code unchanged] ...
-
 param_list2mat <- function(param_list) {
   n_row <- length(param_list[[1]])
   n_col <- length(param_list)
@@ -29,13 +29,15 @@ params <- param_list2mat(params_tmp)
 nv <- ncol(params)
 is_positive_drift <- rep(TRUE, nv)
 
-require(lbaModel)
 pdf_densities <- theoretical_dlba(
   params, is_positive_drift, time_parameter_r
 )
 cdf_densities <- theoretical_plba(
   params, is_positive_drift, time_parameter_r
 )
+
+
+
 pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
 cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
 res1 <- cumsum(pdf_all)
@@ -55,33 +57,22 @@ d_cdf <- data.frame(
   gp = rep(c("Cumulated PDF", "CDF"), each = length(DT))
 )
 
-
-# Compute theoretical densities
-pdf_densities <- theoretical_dlba(params, is_positive_drift, time_parameter_r)
-cdf_densities <- theoretical_plba(params, is_positive_drift, time_parameter_r)
-pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
-cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
-res1 <- cumsum(pdf_all)
-res2 <- cdf_all
-res3 <- res1[length(pdf_all)]
-res4 <- cdf_all[length(cdf_all)]
-cat("The cumulative densities, [PDF, CDF] = [", res3, ", ", res4, "]\n")
-
-# Base R plots
 par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
 # PDF plot
-plot(DT, pdf_densities[[1]] * dt, type = "l", col = "blue", ylim = c(0, max(pdf_all)),
-     xlab = "DT", ylab = "Density", main = "Theoretical PDF")
+plot(DT, pdf_densities[[1]] * dt, type = "l", col = "blue", 
+     ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density", 
+     main = "Theoretical PDF")
+
 lines(DT, pdf_densities[[2]] * dt, col = "red")
 legend("topright", legend = c("Accumulator 1", "Accumulator 2"),
        col = c("blue", "red"), lty = 1, bty = "n")
+
 # CDF plot
 plot(DT, res1, type = "l", col = "blue", ylim = c(0, 1),
      xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF")
 lines(DT, res2, col = "red")
 legend("bottomright", legend = c("Cumulated PDF", "CDF"),
        col = c("blue", "red"), lty = 1, bty = "n")
-
 
 ###################################################
 # Example 2: plba (Base R Plotting)
@@ -95,13 +86,7 @@ params_tmp <- list(
   st0 = c(0.0, 0.0),
   t0 = c(0.2, 0.2)
 )
-param_list2mat <- function(param_list) {
-  n_row <- length(param_list[[1]])
-  n_col <- length(param_list)
-  out <- matrix(NA, nrow = n_row, ncol = n_col)
-  for (i in seq_len(n_col)) out[, i] <- param_list[[i]]
-  t(out)
-}
+
 params <- param_list2mat(params_tmp)
 nv <- ncol(params)
 is_positive_drift <- rep(TRUE, nv)
@@ -115,10 +100,10 @@ cdf1 <- plba(RT, params, is_positive_drift, time_param1)
 cdf2 <- plba(RT, params, is_positive_drift, time_param2)
 cdf3 <- plba(RT, params, is_positive_drift, time_param3)
 
-# Base R plot
 par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
 plot(RT, cdf1[[1]], type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
-     main = "LBA CDF Estimates under Different Time Grids", col = "black", lwd = 2)
+     main = "LBA CDF Estimates under Different Time Grids", col = "black",
+     lwd = 2)
 lines(RT, cdf1[[2]], col = "black", lwd = 2, lty = 2)
 lines(RT, cdf2[[1]], col = "red", lwd = 2)
 lines(RT, cdf2[[2]], col = "red", lwd = 2, lty = 2)
@@ -132,11 +117,4 @@ legend("bottomright",
        lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n")
 
 
-# png("theoretical_cdf.png")
-plot(RT, cdf_densities[[1]], ylim = c(0, 1), ylab = "Density")
-lines(RT, cdf_densities[[2]])
-points(RT, cdf_densities2[[1]], col = "red")
-points(RT, cdf_densities2[[2]], col = "lightgreen")
-points(RT, cdf_densities3[[1]], col = "orange")
-points(RT, cdf_densities3[[2]], col = "lightblue")
-# dev.off()
+head(plba)
