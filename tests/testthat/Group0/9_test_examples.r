@@ -93,7 +93,7 @@ is_positive_drift <- rep(TRUE, nv)
 # Response times (shifted by non-decision time)
 RT <- seq(0, 3, 0.001) + params[6, 1]
 # Different dt setups
-time_param1 <- c(0, 10, 0.0001)
+time_param1 <- c(0, 10, 0.01)
 time_param2 <- c(0, 5, 0.1)
 time_param3 <- c(0, 5, 0.2)
 cdf1 <- plba(RT, params, is_positive_drift, time_param1)
