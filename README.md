@@ -1,4 +1,11 @@
-# lbaModel
+# 📦 lbaModel
+
+<!-- Badges -->
+[![CRAN Status](https://www.r-pkg.org/badges/version/lbaModel)](https://cran.r-project.org/package=lbaModel)
+[![Downloads](https://cranlogs.r-pkg.org/badges/lbaModel)](https://cran.r-project.org/package=lbaModel)
+[![License: GPL-3](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![R-CMD-check](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml)
+
 
 `lbaModel` provides fast and flexible tools for working with the **Linear Ballistic Accumulator (LBA)** model, a widely used model in cognitive psychology for simulating and analysing response time (RT) and choice data.
 
@@ -159,5 +166,5 @@ While these packages are valuable in their own right, `lbaModel` offers several 
 Contributions are welcome! Please feel free to submit issues, fork the repo, or open pull requests.
 
 ## 📬 Contact
-Maintainer: Yi-Shin Lin
-📧 yishinlin001@gmail.com
+- Maintainer: Yi-Shin Lin
+- 📧 yishinlin001@gmail.com
