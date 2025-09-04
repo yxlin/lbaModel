@@ -106,10 +106,12 @@ time_parameter_r <- c(min_dt, max_dt, dt)
 
 set.seed(seed)
 res1 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r,
-    seed = seed, debug = TRUE)
+    seed = seed, debug = TRUE
+)
 
 res2 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r,
-                       debug = TRUE)
+    debug = TRUE
+)
 
 
 verbose <- TRUE
@@ -128,6 +130,4 @@ RT4 <- res1[, 1][res1[, 2] == 1]
 RT5 <- res2[, 1][res2[, 2] == 0]
 RT6 <- res2[, 1][res2[, 2] == 1]
 
-plot_overlay_hist(RT3, RT5, RT4, RT6, file_out = "hist34.pdf")
-
-
+plot_overlay_hist(RT3, RT5, RT4, RT6, file_out = "tests/hist34.pdf")

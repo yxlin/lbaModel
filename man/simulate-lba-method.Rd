@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{object}{An object of class \code{"lba"} that defines the model
+\item{object}{An object of class \code{lba} that defines the model
 structure and parameters.}
 
 \item{nsim}{Integer. Number of trials to simulate per subject. Defaults
@@ -29,23 +29,32 @@ Defaults to \code{NULL}.}
 
 \item{parameter_vector}{A named vector or list of parameters
 (e.g., \code{A}, \code{b}, \code{mean_v.true}, \code{t0}). The user must
-supply either a parameter_vector (here) or a population distribution 
+supply either a parameter_vector (here) or a population distribution
 (via \code{setLBA}). The population distribution is defined typically
-via \code{BuildPrior} of the 'ggdmcPrior 'package. The default value, 
+via \code{BuildPrior} of the \code{ggdmcPrior} package. The default value,
 thus, is set to \code{NULL} here.}
 
 \item{use_inverse_method}{Logical. If \code{TRUE}, use inverse transform
-sampling; otherwise use the process model to sample. Defaults
-to \code{FALSE}.}
+sampling; otherwise use the process model to sample. Defaults to
+\code{FALSE}.}
 
 \item{debug}{Logical. If \code{TRUE}, print debugging output during
 simulation. Defaults to \code{FALSE}.}
 }
 \value{
-A data frame with simulated trial data, including
-the standard columns: \code{s} for subjects, \code{R} for choices,
-\code{RT} for response times and other columns for user-defined
-conditions (by analysing the 'model' object).
+A data frame containing simulated data. The standard columns include:
+\itemize{
+\item \code{s} (lowercase): subject identifiers
+\item \code{R} (uppercase): choices
+\item \code{RT}: response times
+}
+In addition, the data frame includes user-defined condition
+columns derived from the analysed \code{model} object.
+
+Note: the internal mechansim is case sensitive. The choice of
+using upper- or lowercase letters to denote variables is
+a convention (originated from \code{DMC}), rather than a strict
+requirment.
 }
 \description{
 Simulate response times and choices from a Linear Ballistic Accumulator

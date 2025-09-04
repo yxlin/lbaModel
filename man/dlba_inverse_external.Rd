@@ -31,8 +31,8 @@ with the expected order being:
   \item \code{t0} - Non-decision time
 }}
 
-\item{is_positive_drift_r}{A logical vector indicating whether the drift rate
-is positive for each trial.}
+\item{is_positive_drift_r}{A logical vector indicating whether the drift
+rate must be positive for each trial.}
 
 \item{time_parameter_r}{A numeric vector to set the simulated time grid,
 with the expected value for: minimal and maximum decision times and the

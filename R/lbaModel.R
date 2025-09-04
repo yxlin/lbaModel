@@ -7,7 +7,7 @@
 #' facilitating simulation and statistical inference for LBA-based experiments.
 #' For background on the LBA model, see Brown and Heathcote (2008)
 #' <doi:10.1016/j.cogpsych.2007.12.002>.
-#' 
+#'
 #' @keywords package
 #'
 #' @name lbaModel
@@ -33,8 +33,8 @@ NULL
 #' representing a core model parameter and each column representing an
 #' accumulator. Expected row (in fixed order): \code{A}, \code{b},
 #' \code{mean_v}, \code{sd_v}, \code{st0}, and \code{t0}.
-#' @param is_positive_drift_r A logical vector indicating whether the drift rate
-#' is positive for each trial.
+#' @param is_positive_drift_r A logical vector indicating whether the drift
+#' rate must be positive for each trial.
 #' @param verbose A logical value indicating whether to print debug information.
 #'
 #' @details The three functions, respectively, are designed to:
@@ -50,46 +50,51 @@ NULL
 #'
 #' @return A numeric vector of probabilities corresponding to input response
 #' times.
-#' 
+#'
 #' @examples
 #'
 #' ##################
-#' # n1PDF example 
+#' # n1PDF example
 #' ##################
 #' if (requireNamespace("ggdmcModel", quietly = TRUE)) {
-#' 
-#' BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
-#' 
-#' model <- BuildModel(
-#'   p_map = list(A = "1", B = "1", t0 = "1", mean_v = "M", sd_v = "1", 
-#'                st0 = "1"),
-#'   match_map = list(M = list("s1" = "r1", "s2" = "r2")),
-#'   factors = list(S = c("s1", "s2")),
-#'   constants = c(sd_v = 1, st0 = 0),
-#'   accumulators = c("r1", "r2"),
-#'   type = "lba"
-#' )
+#'   BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
+#'
+#'   model <- BuildModel(
+#'     p_map = list(
+#'       A = "1", B = "1", t0 = "1", mean_v = "M", sd_v = "1",
+#'       st0 = "1"
+#'     ),
+#'     match_map = list(M = list("s1" = "r1", "s2" = "r2")),
+#'     factors = list(S = c("s1", "s2")),
+#'     constants = c(sd_v = 1, st0 = 0),
+#'     accumulators = c("r1", "r2"),
+#'     type = "lba"
+#'   )
 #' }
 #'
 #' #---------------------------------------
-#' pop_mean <- c(A = .4, B = 1.6, mean_v.true = 3.5, mean_v.false = 2.38,
-#'               t0 = 0.05)
-#' pop_scale <- c(A = 2, B = .2, mean_v.true = .25, mean_v.false = .1, 
-#'                t0 = 0.01)
-#' 
+#' pop_mean <- c(
+#'   A = .4, B = 1.6, mean_v.true = 3.5, mean_v.false = 2.38,
+#'   t0 = 0.05
+#' )
+#' pop_scale <- c(
+#'   A = 2, B = .2, mean_v.true = .25, mean_v.false = .1,
+#'   t0 = 0.01
+#' )
+#'
 #' if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
-#' 
-#' BuildPrior <- getFromNamespace("BuildPrior", "ggdmcPrior")
-#' 
-#' pop_dist <- BuildPrior(
-#'   p0 = pop_mean,
-#'   p1 = pop_scale,
-#'   lower = rep(NA, model@npar),
-#'   upper = rep(NA, model@npar),
-#'   dists = rep("tnorm", model@npar),
-#'   log_p = rep(FALSE, model@npar))
+#'   BuildPrior <- getFromNamespace("BuildPrior", "ggdmcPrior")
+#'
+#'   pop_dist <- BuildPrior(
+#'     p0 = pop_mean,
+#'     p1 = pop_scale,
+#'     lower = rep(NA, model@npar),
+#'     upper = rep(NA, model@npar),
+#'     dists = rep("tnorm", model@npar),
+#'     log_p = rep(FALSE, model@npar)
+#'   )
 #' }
-#' 
+#'
 #' #---------------------------------------
 #' rt_model <- setLBA(model, population_distribution = pop_dist)
 #' res_process_model <- simulate(rt_model)
@@ -106,7 +111,7 @@ NULL
 #'   }
 #'   t(tmp)
 #' }
-#' 
+#'
 #' params_tmp <- list(
 #'   A = c(0.74, 0.74),
 #'   b = c(1.25 + 0.74, 1.25 + 0.74),
@@ -115,7 +120,7 @@ NULL
 #'   st0 = c(0.0, 0.0),
 #'   t0 = c(0.04, 0.04)
 #' )
-#' 
+#'
 #' # Store the LBA parameter as a list of vectors
 #' print(params_tmp)
 #' # $A: 0.74 0.74
@@ -137,7 +142,7 @@ NULL
 #' # [4,] 1.00 1.00
 #' # [5,] 0.00 0.00
 #' # [6,] 0.04 0.04
-#' 
+#'
 #' n_acc <- 2
 #' is_positive_drift <- rep(TRUE, n_acc)
 #' res <- lbaModel::n1PDF(res_process_model$RT, params, is_positive_drift, TRUE)
@@ -183,7 +188,7 @@ NULL
 #' @name lba_distributions
 #' @title LBA Distribution Functions
 #'
-#' @description The functions, \code{dlba}, \code{plba}, 
+#' @description The functions, \code{dlba}, \code{plba},
 #' \code{theoretical_dlba}, and \code{theoretical_plba}, calculate probability
 #' distributions for the Linear Ballistic Accumulator model:
 #' \itemize{
@@ -206,19 +211,19 @@ NULL
 #'   \item Mean drift rates (mean_v)
 #'   \item The standard deviation of the drift rates (sd_v)
 #'   \item The variability of the non-decision time (st0)
-#'   \item Non-decision time (t0)
-#' }. Each column represents parameters for an accumulator.
-#' 
+#'   \item Non-decision time (t0).}
+#' Each column represents parameters for an accumulator.
+#'
 #' @param is_positive_drift_r A logical vector indicating whether drift rates
-#' are positive
+#' are strictly positive
 #' @param time_parameter_r For theoretical functions, a numeric vector to set
-#' minimal  decison time, maximal decison time, and the different time. The 
+#' minimal  decison time, maximal decison time, and the different time. The
 #' internal mechanism uses this vector to set fine time points for evaluation.
 #'
 #' @return For all functions: A list containing:
 #' \itemize{
 #'   \item `values` - The computed distribution values
-#'   \item `time_points` - The time points used (for theoretical functions 
+#'   \item `time_points` - The time points used (for theoretical functions
 #' and 'plba')
 #'   \item Additional diagnostic information when applicable
 #' }
@@ -228,11 +233,11 @@ NULL
 #' \describe{
 #'   \item{`dlba`}{Computes the probability density for observed response times,
 #'   used during model fitting and likelihood calculations}
-#'   \item{`plba`}{Computes the cumulative probability for observed response 
+#'   \item{`plba`}{Computes the cumulative probability for observed response
 #' times, useful for model validation and goodness-of-fit tests}
-#'   \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic 
+#'   \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic
 #' purposes and prediction}
-#'   \item{`theoretical_plba`}{Computes the theoretical CDF for model 
+#'   \item{`theoretical_plba`}{Computes the theoretical CDF for model
 #' validation and comparison with empirical data}
 #' }
 #'
@@ -304,10 +309,14 @@ NULL
 #'   gp = rep(c("Cumulated PDF", "CDF"), each = length(DT))
 #' )
 #' # Compute theoretical densities
-#' pdf_densities <- theoretical_dlba(params, is_positive_drift, 
-#'  time_parameter_r)
-#' cdf_densities <- theoretical_plba(params, is_positive_drift, 
-#'  time_parameter_r)
+#' pdf_densities <- theoretical_dlba(
+#'   params, is_positive_drift,
+#'   time_parameter_r
+#' )
+#' cdf_densities <- theoretical_plba(
+#'   params, is_positive_drift,
+#'   time_parameter_r
+#' )
 #' pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
 #' cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
 #' res1 <- cumsum(pdf_all)
@@ -315,23 +324,31 @@ NULL
 #' res3 <- res1[length(pdf_all)]
 #' res4 <- cdf_all[length(cdf_all)]
 #' cat("The cumulative densities, [PDF, CDF] = [", res3, ", ", res4, "]\n")
-#' 
+#'
 #' par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
 #' # PDF plot
-#' plot(DT, pdf_densities[[1]] * dt, type = "l", col = "blue", 
-#'      ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density", 
-#'      main = "Theoretical PDF")
-#' 
+#' plot(DT, pdf_densities[[1]] * dt,
+#'   type = "l", col = "blue",
+#'   ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density",
+#'   main = "Theoretical PDF"
+#' )
+#'
 #' lines(DT, pdf_densities[[2]] * dt, col = "red")
-#' legend("topright", legend = c("Accumulator 1", "Accumulator 2"),
-#'        col = c("blue", "red"), lty = 1, bty = "n")
-#' 
+#' legend("topright",
+#'   legend = c("Accumulator 1", "Accumulator 2"),
+#'   col = c("blue", "red"), lty = 1, bty = "n"
+#' )
+#'
 #' # CDF plot
-#' plot(DT, res1, type = "l", col = "blue", ylim = c(0, 1),
-#'      xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF")
+#' plot(DT, res1,
+#'   type = "l", col = "blue", ylim = c(0, 1),
+#'   xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF"
+#' )
 #' lines(DT, res2, col = "red")
-#' legend("bottomright", legend = c("Cumulated PDF", "CDF"),
-#'        col = c("blue", "red"), lty = 1, bty = "n")
+#' legend("bottomright",
+#'   legend = c("Cumulated PDF", "CDF"),
+#'   col = c("blue", "red"), lty = 1, bty = "n"
+#' )
 #'
 #' ###################################################
 #' # Example 2: plba (Base R Plotting)
@@ -357,22 +374,27 @@ NULL
 #' cdf1 <- plba(RT, params, is_positive_drift, time_param1)
 #' cdf2 <- plba(RT, params, is_positive_drift, time_param2)
 #' cdf3 <- plba(RT, params, is_positive_drift, time_param3)
-#' 
+#'
 #' par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
-#' plot(RT, cdf1[[1]], type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
-#'      main = "LBA CDF Estimates under Different Time Grids", col = "black",
-#'      lwd = 2)
+#' plot(RT, cdf1[[1]],
+#'   type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
+#'   main = "LBA CDF Estimates under Different Time Grids", col = "black",
+#'   lwd = 2
+#' )
 #' lines(RT, cdf1[[2]], col = "black", lwd = 2, lty = 2)
 #' lines(RT, cdf2[[1]], col = "red", lwd = 2)
 #' lines(RT, cdf2[[2]], col = "red", lwd = 2, lty = 2)
 #' lines(RT, cdf3[[1]], col = "blue", lwd = 2)
 #' lines(RT, cdf3[[2]], col = "blue", lwd = 2, lty = 2)
 #' legend("bottomright",
-#'        legend = c("Acc1 (dt=0.0001)", "Acc2 (dt=0.0001)",
-#'                   "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
-#'                   "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"),
-#'        col = c("black", "black", "red", "red", "blue", "blue"),
-#'        lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n")
+#'   legend = c(
+#'     "Acc1 (dt=0.0001)", "Acc2 (dt=0.0001)",
+#'     "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
+#'     "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"
+#'   ),
+#'   col = c("black", "black", "red", "red", "blue", "blue"),
+#'   lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n"
+#' )
 NULL
 
 
@@ -396,8 +418,8 @@ NULL
 #'   \item \code{st0} - Variability of the non-decision
 #'   \item \code{t0} - Non-decision time
 #' }
-#' @param is_positive_drift_r A logical vector indicating whether the drift rate
-#' is positive for each trial.
+#' @param is_positive_drift_r A logical vector indicating whether the drift
+#' rate must be positive for each trial.
 #' @param time_parameter_r A numeric vector to set the simulated time grid,
 #' with the expected value for: minimal and maximum decision times and the
 #' difference time (i.e., \code{min dt}, \code{max dt} and \code{dt}).
@@ -437,7 +459,7 @@ NULL
 #' @param n Integer. Number of trials to simulate. Defaults to \code{1L}.
 #' @param use_inverse_method Logical. If \code{TRUE}, use the inverse
 #'                         transform sampling method; otherwise use
-#'                         the standard sampling method.Defaults to 
+#'                         the standard sampling method.Defaults to
 #'                         \code{FALSE}.
 #' @param debug Logical. If \code{TRUE}, prints detailed messages
 #'                        for debugging. Defaults to \code{FALSE}.
@@ -459,7 +481,7 @@ NULL
 #' inverse method may offer better numerical behaviour in edge cases (e.g.,
 #' small RTs or boundary conditions).
 #' @keywords internal
-#' 
+#'
 #' @examples
 #' param_list2mat <- function(param_list) {
 #'   n_row <- length(param_list[[1]])
@@ -509,11 +531,13 @@ NULL
 #' set.seed(seed)
 #' # R interface
 #' result1 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r, n,
-#'   seed = seed, debug = TRUE)
+#'   seed = seed, debug = TRUE
+#' )
 #' # C++ interface. No seed argument.
 #' result2 <- lbaModel::rlba_r(params, is_positive_drift, time_parameter_r, n,
-#'   debug = TRUE)
-#' 
+#'   debug = TRUE
+#' )
+#'
 #' print(result1)
 #' print(result2)
 #'
@@ -522,7 +546,7 @@ NULL
 rlba <- function(
     parameter_r, is_positive_drift_r, time_parameter_r,
     n = 1L,
-    use_inverse_method = FALSE, 
+    use_inverse_method = FALSE,
     debug = FALSE, seed = NULL) {
   #--- Seed Handling ---
   if (is.null(seed)) {

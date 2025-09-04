@@ -6,35 +6,30 @@
 [![License: GPL-3](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![R-CMD-check](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml)
 
+## 🧠 Overview
+`lbaModel` provides **fast and flexible tools** for working with the **Linear Ballistic Accumulator (LBA)** model, a widely used framework in cognitive psychology and neuroscience for simulating and analysing choice and response time (RT) data.
 
-`lbaModel` provides fast and flexible tools for working with the **Linear Ballistic Accumulator (LBA)** model, a widely used model in cognitive psychology for simulating and analysing response time (RT) and choice data.
+Key features:
 
-The package supports:
-
-- ✅ Likelihood computation  
-- ✅ Parameter estimation  
-- ✅ Data simulation  
-- ✅ Probability density and cumulative distribution evaluation  
+- ⚡ **Likelihood computation** for parameter estimation
+- 🎯 **Data simulation** at the subject or population level
+- 📊 **Probability density (PDF) & cumulative distribution (CDF)** evaluation
+- 🔗 **Design-based parameter mapping** for factorial experiments
+- 💻 **C++ backend** for high-performance computation
 
 While designed to be part of the [`ggdmc`](https://cran.r-project.org/package=ggdmc) ecosystem, `lbaModel` is also fully functional as a standalone package.
 
-📖 For a mathematical description of the minimal LBA model, see:
+## 📐 Conceptual Illustration
+Here’s a schematic of the **LBA model** showing accumulators racing to threshold (similar to diffusion models, but with linear deterministic growth.)
 
-> Brown, S. D., & Heathcote, A. (2008).  
-> *The simplest complete model of choice response time: Linear ballistic accumulation*.  
-> *Cognitive Psychology*, 57(3), 153–178. https://doi.org/10.1016/j.cogpsych.2007.12.002  
+![Conceptual illustration of the LBA Model](man/figures/lba_schematic_t0_A.svg)
 
-🆕 For a tutorial and practical guidance on how to set up a design-based LBA model, see:
+*Figure: The LBA model assumes evidence accumulates linearly and independently across choices, with start points, drawing from a uniform distribution and drift rates. The first accumulator to hit its threshold determines the response and response time.*
 
-> Lin, Y.-S., & Strickland, L. (2020).  
-> *Evidence accumulation models with R: A practical guide to hierarchical Bayesian methods*.  
-> *The Quantitative Methods for Psychology*, 16(2), 133–149. https://doi.org/10.20982/tqmp.16.2.p133
-
----
 
 ## 🚀 Getting Started
 
-### Minimal LBA model example
+### Example: Minimal LBA Model 
 
 ```r
 library(ggdmcModel)
@@ -77,12 +72,9 @@ dat <- simulate(sub_model, nsim = 256, parameter_vector = p_vector, n_subject = 
 
 # Multiple subjects
 hdat <- simulate(pop_model, nsim = 128, n_subject = 32)
-
-
 ```
 
 ### 📊 Visualising LBA Densities
-Use theoretical_dlba() and theoretical_plba() to compute and visualise theoretical PDF and CDF values:
 
 ```r
 # Parameters
@@ -111,26 +103,21 @@ is_pos <- rep(TRUE, nv)
 
 pdfs <- theoretical_dlba(params, is_pos, time_params)
 cdfs <- theoretical_plba(params, is_pos, time_params)
-
 ```
 
 ## 📦 Installation
-You can install `lbaModel` either from CRAN (recommended) or from the development version on GitHub.
-
 ### From CRAN (Recommended)
 
 ```r
 install.packages("lbaModel")
-
 ```
 
 ### From GitHub (Development Version)
-> ⚠️ This may require installing development tools and many unrelated dependencies.
+> ⚠️ Requires development tools and extra dependencies.
 
 ```r
 # install.packages("devtools")
 devtools::install_github("yxlin/lbaModel")
-
 ```
 
 ## 🔧 Dependencies
@@ -141,26 +128,27 @@ devtools::install_github("yxlin/lbaModel")
 - RcppArmadillo (≥ 0.10.7.5.0)
 - ggdmcHeaders
 
-## 📚 Citation
+## 📚 Reference
 
-If you use `lbaModel` in your research, please cite:
+If you use `lbaModel`, please cite:
 
-- Brown & Heathcote (2008): https://doi.org/10.1016/j.cogpsych.2007.12.002
-- Lin & Strickland (2020): https://doi.org/10.20982/tqmp.16.2.p133
+- Brown & Heathcote (2008). The simplest complete model of choice response time: Linear ballistic accumulation. _Cognitive Psychology_, 57(3), 153–178.: [https://doi.org/10.1016/j.cogpsych.2007.12.002](https://doi.org/10.1016/j.cogpsych.2007.12.002)
+- Lin & Strickland (2020). Evidence accumulation models with R: A practical guide to hierarchical Bayesian methods. _The Quantitative Methods for Psychology_, 16(2), 133–149.
+[https://doi.org/10.20982/tqmp.16.2.p133](https://doi.org/10.20982/tqmp.16.2.p133)
 
 
-## 🔄 Similar R Packages
+## 🔄 Related R Packages
 
-`lbaModel` is part of a growing ecosystem of tools for modelling decision processes using the Linear Ballistic Accumulator (LBA) framework. Several other R packages also support LBA-related computations:
 
-- [`glba`](https://cran.r-project.org/package=glba): Provides generalised LBA model fitting and simulation using maximum likelihood estimation.
-- [`rtdists`](https://cran.r-project.org/package=rtdists): Offers density, distribution, and random generation functions for several response time models, including the LBA and diffusion decision models.
+- [`glba`](https://cran.r-project.org/package=glba): Generalised LBA model fitting via MLE
+- [`rtdists`](https://cran.r-project.org/package=rtdists): Density/distribution
+for LBA and diffusion models.
 
-While these packages are valuable in their own right, `lbaModel` offers several distinguishing features:
+### Why `lbaModel`?
 
-- Integration with the `ggdmc` framework for hierarchical Bayesian modelling.
-- Full support for design-based parameter mapping in factorial experimental designs.
-- Fast CPU-accelerated simulation capabilities through its C++ backend—when used alongside `ggdmcLikelihood` and its high-performance extension `pLBA`, implemented in the `pPDA` package.
+- Tight integration with `ggdmc` for hierarchical Bayesian inference
+- Full support for **design-based parameter mapping** in factorial designs
+- Optimised **C++ backend** with extensions (`ggdmcLikelihood`, `pPDA`) for high-performance parallelised LBA
 
 ## 🤝 Contributing
 Contributions are welcome! Please feel free to submit issues, fork the repo, or open pull requests.
@@ -168,3 +156,4 @@ Contributions are welcome! Please feel free to submit issues, fork the repo, or 
 ## 📬 Contact
 - Maintainer: Yi-Shin Lin
 - 📧 yishinlin001@gmail.com
+

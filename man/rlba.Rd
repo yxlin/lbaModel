@@ -48,7 +48,7 @@ difference time (i.e., \code{min dt}, \code{max dt} and \code{dt}).}
 
 \item{use_inverse_method}{Logical. If \code{TRUE}, use the inverse
 transform sampling method; otherwise use
-the standard sampling method.Defaults to 
+the standard sampling method.Defaults to
 \code{FALSE}.}
 
 \item{debug}{Logical. If \code{TRUE}, prints detailed messages
@@ -125,10 +125,12 @@ time_parameter_r <- c(min_dt, max_dt, dt)
 set.seed(seed)
 # R interface
 result1 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r, n,
-  seed = seed, debug = TRUE)
+  seed = seed, debug = TRUE
+)
 # C++ interface. No seed argument.
 result2 <- lbaModel::rlba_r(params, is_positive_drift, time_parameter_r, n,
-  debug = TRUE)
+  debug = TRUE
+)
 
 print(result1)
 print(result2)

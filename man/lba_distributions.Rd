@@ -27,27 +27,27 @@ times}
   \item Mean drift rates (mean_v)
   \item The standard deviation of the drift rates (sd_v)
   \item The variability of the non-decision time (st0)
-  \item Non-decision time (t0)
-}. Each column represents parameters for an accumulator.}
+  \item Non-decision time (t0).}
+Each column represents parameters for an accumulator.}
 
 \item{is_positive_drift_r}{A logical vector indicating whether drift rates
-are positive}
+are strictly positive}
 
 \item{time_parameter_r}{For theoretical functions, a numeric vector to set
-minimal  decison time, maximal decison time, and the different time. The 
+minimal  decison time, maximal decison time, and the different time. The
 internal mechanism uses this vector to set fine time points for evaluation.}
 }
 \value{
 For all functions: A list containing:
 \itemize{
   \item `values` - The computed distribution values
-  \item `time_points` - The time points used (for theoretical functions 
+  \item `time_points` - The time points used (for theoretical functions
 and 'plba')
   \item Additional diagnostic information when applicable
 }
 }
 \description{
-The functions, \code{dlba}, \code{plba}, 
+The functions, \code{dlba}, \code{plba},
 \code{theoretical_dlba}, and \code{theoretical_plba}, calculate probability
 distributions for the Linear Ballistic Accumulator model:
 \itemize{
@@ -66,11 +66,11 @@ These functions provide the computational foundation for the LBA model:
 \describe{
   \item{`dlba`}{Computes the probability density for observed response times,
   used during model fitting and likelihood calculations}
-  \item{`plba`}{Computes the cumulative probability for observed response 
+  \item{`plba`}{Computes the cumulative probability for observed response
 times, useful for model validation and goodness-of-fit tests}
-  \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic 
+  \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic
 purposes and prediction}
-  \item{`theoretical_plba`}{Computes the theoretical CDF for model 
+  \item{`theoretical_plba`}{Computes the theoretical CDF for model
 validation and comparison with empirical data}
 }
 }
@@ -142,10 +142,14 @@ d_cdf <- data.frame(
   gp = rep(c("Cumulated PDF", "CDF"), each = length(DT))
 )
 # Compute theoretical densities
-pdf_densities <- theoretical_dlba(params, is_positive_drift, 
- time_parameter_r)
-cdf_densities <- theoretical_plba(params, is_positive_drift, 
- time_parameter_r)
+pdf_densities <- theoretical_dlba(
+  params, is_positive_drift,
+  time_parameter_r
+)
+cdf_densities <- theoretical_plba(
+  params, is_positive_drift,
+  time_parameter_r
+)
 pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
 cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
 res1 <- cumsum(pdf_all)
@@ -156,20 +160,28 @@ cat("The cumulative densities, [PDF, CDF] = [", res3, ", ", res4, "]\n")
 
 par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
 # PDF plot
-plot(DT, pdf_densities[[1]] * dt, type = "l", col = "blue", 
-     ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density", 
-     main = "Theoretical PDF")
+plot(DT, pdf_densities[[1]] * dt,
+  type = "l", col = "blue",
+  ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density",
+  main = "Theoretical PDF"
+)
 
 lines(DT, pdf_densities[[2]] * dt, col = "red")
-legend("topright", legend = c("Accumulator 1", "Accumulator 2"),
-       col = c("blue", "red"), lty = 1, bty = "n")
+legend("topright",
+  legend = c("Accumulator 1", "Accumulator 2"),
+  col = c("blue", "red"), lty = 1, bty = "n"
+)
 
 # CDF plot
-plot(DT, res1, type = "l", col = "blue", ylim = c(0, 1),
-     xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF")
+plot(DT, res1,
+  type = "l", col = "blue", ylim = c(0, 1),
+  xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF"
+)
 lines(DT, res2, col = "red")
-legend("bottomright", legend = c("Cumulated PDF", "CDF"),
-       col = c("blue", "red"), lty = 1, bty = "n")
+legend("bottomright",
+  legend = c("Cumulated PDF", "CDF"),
+  col = c("blue", "red"), lty = 1, bty = "n"
+)
 
 ###################################################
 # Example 2: plba (Base R Plotting)
@@ -197,18 +209,23 @@ cdf2 <- plba(RT, params, is_positive_drift, time_param2)
 cdf3 <- plba(RT, params, is_positive_drift, time_param3)
 
 par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
-plot(RT, cdf1[[1]], type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
-     main = "LBA CDF Estimates under Different Time Grids", col = "black",
-     lwd = 2)
+plot(RT, cdf1[[1]],
+  type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
+  main = "LBA CDF Estimates under Different Time Grids", col = "black",
+  lwd = 2
+)
 lines(RT, cdf1[[2]], col = "black", lwd = 2, lty = 2)
 lines(RT, cdf2[[1]], col = "red", lwd = 2)
 lines(RT, cdf2[[2]], col = "red", lwd = 2, lty = 2)
 lines(RT, cdf3[[1]], col = "blue", lwd = 2)
 lines(RT, cdf3[[2]], col = "blue", lwd = 2, lty = 2)
 legend("bottomright",
-       legend = c("Acc1 (dt=0.0001)", "Acc2 (dt=0.0001)",
-                  "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
-                  "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"),
-       col = c("black", "black", "red", "red", "blue", "blue"),
-       lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n")
+  legend = c(
+    "Acc1 (dt=0.0001)", "Acc2 (dt=0.0001)",
+    "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
+    "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"
+  ),
+  col = c("black", "black", "red", "red", "blue", "blue"),
+  lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n"
+)
 }

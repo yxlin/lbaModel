@@ -21,8 +21,8 @@ representing a core model parameter and each column representing an
 accumulator. Expected row (in fixed order): \code{A}, \code{b},
 \code{mean_v}, \code{sd_v}, \code{st0}, and \code{t0}.}
 
-\item{is_positive_drift_r}{A logical vector indicating whether the drift rate
-is positive for each trial.}
+\item{is_positive_drift_r}{A logical vector indicating whether the drift
+rate must be positive for each trial.}
 
 \item{verbose}{A logical value indicating whether to print debug information.}
 }
@@ -52,40 +52,45 @@ refers to the accumulator passing the threshold first.
 \examples{
 
 ##################
-# n1PDF example 
+# n1PDF example
 ##################
 if (requireNamespace("ggdmcModel", quietly = TRUE)) {
+  BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
 
-BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
-
-model <- BuildModel(
-  p_map = list(A = "1", B = "1", t0 = "1", mean_v = "M", sd_v = "1", 
-               st0 = "1"),
-  match_map = list(M = list("s1" = "r1", "s2" = "r2")),
-  factors = list(S = c("s1", "s2")),
-  constants = c(sd_v = 1, st0 = 0),
-  accumulators = c("r1", "r2"),
-  type = "lba"
-)
+  model <- BuildModel(
+    p_map = list(
+      A = "1", B = "1", t0 = "1", mean_v = "M", sd_v = "1",
+      st0 = "1"
+    ),
+    match_map = list(M = list("s1" = "r1", "s2" = "r2")),
+    factors = list(S = c("s1", "s2")),
+    constants = c(sd_v = 1, st0 = 0),
+    accumulators = c("r1", "r2"),
+    type = "lba"
+  )
 }
 
 #---------------------------------------
-pop_mean <- c(A = .4, B = 1.6, mean_v.true = 3.5, mean_v.false = 2.38,
-              t0 = 0.05)
-pop_scale <- c(A = 2, B = .2, mean_v.true = .25, mean_v.false = .1, 
-               t0 = 0.01)
+pop_mean <- c(
+  A = .4, B = 1.6, mean_v.true = 3.5, mean_v.false = 2.38,
+  t0 = 0.05
+)
+pop_scale <- c(
+  A = 2, B = .2, mean_v.true = .25, mean_v.false = .1,
+  t0 = 0.01
+)
 
 if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
+  BuildPrior <- getFromNamespace("BuildPrior", "ggdmcPrior")
 
-BuildPrior <- getFromNamespace("BuildPrior", "ggdmcPrior")
-
-pop_dist <- BuildPrior(
-  p0 = pop_mean,
-  p1 = pop_scale,
-  lower = rep(NA, model@npar),
-  upper = rep(NA, model@npar),
-  dists = rep("tnorm", model@npar),
-  log_p = rep(FALSE, model@npar))
+  pop_dist <- BuildPrior(
+    p0 = pop_mean,
+    p1 = pop_scale,
+    lower = rep(NA, model@npar),
+    upper = rep(NA, model@npar),
+    dists = rep("tnorm", model@npar),
+    log_p = rep(FALSE, model@npar)
+  )
 }
 
 #---------------------------------------
