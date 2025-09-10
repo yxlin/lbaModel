@@ -60,4 +60,5 @@ cleanup
 
 .vscode/
 
-tests/cran-comments.md/tests/cran-comments.md
+tests/cran-comments.md/
+

@@ -261,80 +261,28 @@ Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
 // [[Rcpp::export]]
 Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r,
                             Rcpp::LogicalVector is_positive_drift_r,
-                            Rcpp::NumericVector time_parameter_r,
-                            bool debug = false)
+                            Rcpp::NumericVector time_parameter_r, bool debug = false)
 {
-    // Convert inputs
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+
     auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
     auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    if (time_parameter.size() != 3)
-        Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
-    const double tmin = time_parameter[0];
-    const double tmax = time_parameter[1];
-    const double dt = time_parameter[2];
-    if (!(dt > 0.0))
-        Rcpp::stop("dt must be > 0");
-    if (!(tmax >= tmin))
-        Rcpp::stop("tmax must be >= tmin");
-
-    // Set up the model (same as before)
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
     lba.set_times(time_parameter);
     if (debug)
+    {
         lba.print_parameters();
-
-    // 1) Get PDFs from the stable routine
-    auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
-
-    if (pdfs.empty())
-        return Rcpp::List(); // no accumulators => empty
-
-    const std::size_t n_acc = pdfs.size();
-    const std::size_t T = pdfs[0].size();
-    for (std::size_t a = 1; a < n_acc; ++a)
-    {
-        if (pdfs[a].size() != T)
-            Rcpp::stop("All accumulator PDF vectors must have the same length");
     }
 
-    // 2) Numerically integrate (uniform grid) to get CDFs
-    //    cdf[0] = max(0, pdf[0]*dt); cdf[t] = cdf[t-1] + pdf[t]*dt
-    std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
+    auto densities = lba.theoretical_plba();
 
-    for (std::size_t a = 0; a < n_acc; ++a)
+    Rcpp::List out;
+    for (size_t i = 0; i < densities.size(); ++i)
     {
-        if (T > 0)
-        {
-            double s = pdfs[a][0] * dt;
-            if (!std::isfinite(s))
-                s = 0.0;
-            cdfs[a][0] = std::max(0.0, s);
-        }
-        for (std::size_t t = 1; t < T; ++t)
-        {
-            double step = pdfs[a][t] * dt;
-            if (!std::isfinite(step))
-                step = 0.0;
-            double v = cdfs[a][t - 1] + step;
-            // optional clipping for numerical stability
-            if (v < 0.0)
-                v = 0.0;
-            if (v > 1.0)
-                v = 1.0;
-            cdfs[a][t] = v;
-        }
-    }
-
-    // 3) Return as R list
-    Rcpp::List out(n_acc);
-
-    for (std::size_t a = 0; a < n_acc; ++a)
-    {
-        out[a] = Rcpp::wrap(cdfs[a]);
+        out.push_back(Rcpp::wrap(densities[i]));
     }
 
     return out;
