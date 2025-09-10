@@ -13,7 +13,8 @@ Rcpp::NumericVector fptpdf(Rcpp::NumericVector rt_r,
                            bool verbose = false)
 {
     auto is_positive_drift =
-    Rcpp::as<std::vector<bool>>(is_positive_drift_r); auto parameters =
+        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+    auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
     size_t n_rt = rt_r.size();
@@ -44,7 +45,8 @@ Rcpp::NumericVector fptcdf(Rcpp::NumericVector rt_r,
                            bool verbose = false)
 {
     auto is_positive_drift =
-    Rcpp::as<std::vector<bool>>(is_positive_drift_r); auto parameters =
+        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+    auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
     size_t n_rt = rt_r.size();
@@ -76,7 +78,7 @@ Rcpp::NumericVector n1PDF(Rcpp::NumericVector rt_r,
 {
     std::vector<double> rt_cpp = Rcpp::as<std::vector<double>>(rt_r);
     auto is_positive_drift =
-    Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
 
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
@@ -103,19 +105,22 @@ Rcpp::NumericVector n1PDF(Rcpp::NumericVector rt_r,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
-                Rcpp::LogicalVector is_positive_drift_r)
+                Rcpp::LogicalVector is_positive_drift_r, bool debug = false)
 {
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    // std::vector<std::vector<double>> parameters =
-    //     numericMatrixToVector(parameter_r);
     auto rt = Rcpp::as<std::vector<double>>(rt_r);
     auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
 
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
-    lba.print_parameters();
+
+    if (debug)
+    {
+        lba.print_parameters();
+    }
+
     auto densities = lba.dlba_all(rt);
 
     // Convert to R list
@@ -133,7 +138,7 @@ Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
 // [[Rcpp::export]]
 Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
                 Rcpp::LogicalVector is_positive_drift_r,
-                Rcpp::NumericVector time_parameter_r)
+                Rcpp::NumericVector time_parameter_r, bool debug = false)
 {
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
@@ -149,7 +154,11 @@ Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
     lba.set_times(time_parameter);
-    lba.print_parameters();
+
+    if (debug)
+    {
+        lba.print_parameters();
+    }
 
     auto densities = lba.plba_all(rt);
 
@@ -218,7 +227,7 @@ Rcpp::DataFrame rlba_r(Rcpp::NumericMatrix parameter_r,
 // [[Rcpp::export]]
 Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
                             Rcpp::LogicalVector is_positive_drift_r,
-                            Rcpp::NumericVector time_parameter_r)
+                            Rcpp::NumericVector time_parameter_r, bool debug = false)
 {
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
@@ -229,7 +238,11 @@ Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
     lba.set_times(time_parameter);
-    lba.print_parameters();
+
+    if (debug)
+    {
+        lba.print_parameters();
+    }
 
     auto densities = lba.theoretical_dlba();
 
@@ -248,7 +261,7 @@ Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
 // [[Rcpp::export]]
 Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r,
                             Rcpp::LogicalVector is_positive_drift_r,
-                            Rcpp::NumericVector time_parameter_r)
+                            Rcpp::NumericVector time_parameter_r, bool debug = false)
 {
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
@@ -259,7 +272,10 @@ Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r,
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
     lba.set_times(time_parameter);
-    lba.print_parameters();
+    if (debug)
+    {
+        lba.print_parameters();
+    }
 
     auto densities = lba.theoretical_plba();
 
@@ -272,7 +288,6 @@ Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r,
     return out;
 }
 
-// Compute log-likelihood for all trials
 //' @export
 //' @rdname dlba_inverse_external
 // [[Rcpp::export]]
@@ -282,6 +297,7 @@ dlba_inverse_external(Rcpp::NumericVector rt_r, Rcpp::IntegerVector response_r,
                       Rcpp::LogicalVector is_positive_drift_r,
                       Rcpp::NumericVector time_parameter_r)
 {
+    // Compute log-likelihood for all trials
     auto parameters =
         r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
@@ -298,7 +314,7 @@ dlba_inverse_external(Rcpp::NumericVector rt_r, Rcpp::IntegerVector response_r,
     return Rcpp::wrap(out_cpp);
 }
 
-//' @rdname simulate_lba_trials
+//' @rdname lba_lowlevel
 //' @export
 // [[Rcpp::export]]
 bool validate_lba_parameters(const Rcpp::S4 &rt_model_r,
@@ -339,44 +355,7 @@ bool validate_lba_parameters(const Rcpp::S4 &rt_model_r,
     return is_valid;
 }
 
-//' Low-Level LBA Simulation and Parameter Validation
-//'
-//' Internal functions to simulate data and validate parameter inputs for the
-//' Linear Ballistic Accumulator (LBA) model using C++ via Rcpp.
-//'
-//' @description
-//' These functions provide low-level interfaces for simulating trial-level
-//' data from an LBA model and validating parameter inputs. They are designed
-//' to be used internally by higher-level R functions and are not intended for
-//' direct end-user interaction.
-//'
-//' @param rt_model_r An S4 object defining the LBA model. Typically passed from
-//' R and contains model structure and metadata.
-//' @param parameters_r A named numeric vector of LBA parameters (e.g.,
-//' \code{A}, \code{b}, \code{v}, \code{t0}) for simulation or validation.
-//' @param n_trial Integer (default \code{1}). Number of trials to simulate
-//' @param use_inverse_method Logical. If \code{TRUE}, use inverse transform
-//' sampling; otherwise, standard sampling is used.
-//' @param debug Logical. If \code{TRUE}, prints internal diagnostics or
-//' errors during validation or simulation.
-//'
-//' @return
-//' \code{simulate_lba_trials()} returns a \code{data.frame} (as
-//' \code{Rcpp::DataFrame}) with simulated trials, including columns such as:
-//' \itemize{
-//'   \item \code{trial} — Trial index
-//'   \item \code{choice} — Accumulator index of the winning response
-//'   \item \code{rt} — Simulated response time
-//' }
-//'
-//' \code{validate_lba_parameters()} returns a logical scalar indicating whether
-//' the provided parameter vector is valid for the given model object.
-//'
-//' @examples
-//' \dontrun{
-//' # Simulating 10 trials from a model with given parameters
-//' }
-//' @keywords internal
+//' @rdname lba_lowlevel
 //' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame simulate_lba_trials(const Rcpp::S4 &rt_model_r,

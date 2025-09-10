@@ -42,8 +42,8 @@ NULL
 #'   \item \code{fptcdf}: Calculates the cumulative distribution function
 #'                        (CDF; 1 accumulator).
 #'   \item \code{n1PDF}: Calculates the node 1 PDF for the multi-accumulator
-#'                       LBA model freeing the non-decision time.
-#' \strong{node 1} refers to the accumulator passing the threshold first.
+#'                       LBA model freeing the non-decision time. 'node 1'
+#' refers to the accumulator passing the threshold first.
 #' }
 #'
 #' @return A numeric vector of probabilities corresponding to input response
@@ -144,7 +144,7 @@ NULL
 #'
 #' n_acc <- 2
 #' is_positive_drift <- rep(TRUE, n_acc)
-#' res <- n1PDF(res_process_model$RT, params, is_positive_drift, TRUE)
+#' res <- lbaModel::n1PDF(res_process_model$RT, params, is_positive_drift, TRUE)
 #' cat("Print first 30 density values from the LBA node 1 function: \n")
 #' print(head(round(res, 2), 30))
 #'
@@ -191,10 +191,10 @@ NULL
 #' \code{theoretical_dlba}, and \code{theoretical_plba}, calculate probability
 #' distributions for the Linear Ballistic Accumulator model:
 #' \itemize{
-#'   \item \code{dlba} - Probability density function (PDF) for
-#' \strong{observed} choice response times
-#'   \item \code{plba} - Cumulative distribution function (CDF) for
-#' \strong{observed} choice response times
+#'   \item \code{dlba} - Probability density function (PDF) for observed
+#' choice response times
+#'   \item \code{plba} - Cumulative distribution function (CDF) for observed
+#' choice response times
 #'   \item \code{theoretical_dlba} - Theoretical density function sets a
 #' time range and computes the density for this range.
 #'   \item \code{theoretical_plba} - Theoretical cumulative distribution
@@ -202,8 +202,8 @@ NULL
 #' range.
 #' }
 #'
-#' @param rt_r For \code{dlba} and \code{plba}: A numeric vector of
-#' \strong{observed} response times
+#' @param rt_r For \code{dlba} and \code{plba}: A numeric vector of observed
+#' response times
 #' @param parameter_r A numeric matrix of parameters where rows represent:
 #' \itemize{
 #'   \item Starting point variability (A)
@@ -219,26 +219,25 @@ NULL
 #' @param time_parameter_r For theoretical functions, a numeric vector to set
 #' minimal decision time, maximal decision time, and the step size (dt). The
 #' internal mechanism uses this vector to set fine time points for evaluation.
-#' @param debug A logical value indicating whether to print debug information.
 #'
 #' @return For all functions: A list containing:
 #' \itemize{
-#'   \item \strong{values} - The computed distribution values
-#'   \item \strong{time_points} - The time points used (for theoretical
-#' functions and \strong{plba})
+#'   \item `values` - The computed distribution values
+#'   \item `time_points` - The time points used (for theoretical functions
+#' and 'plba')
 #'   \item Additional diagnostic information when applicable
 #' }
 #'
 #' @details
 #' These functions provide the computational foundation for the LBA model:
 #' \describe{
-#'   \item{\code{dlba}}{Computes the probability density for observed response
-#'   times, used during model fitting and likelihood calculations}
-#'   \item{\code{plba}}{Computes the cumulative probability for observed
-#' response times, useful for model validation and goodness-of-fit tests}
-#'   \item{\code{theoretical_dlba}}{Computes the theoretical PDF for diagnostic
+#'   \item{`dlba`}{Computes the probability density for observed response times,
+#'   used during model fitting and likelihood calculations}
+#'   \item{`plba`}{Computes the cumulative probability for observed response
+#' times, useful for model validation and goodness-of-fit tests}
+#'   \item{`theoretical_dlba`}{Computes the theoretical PDF for diagnostic
 #' purposes and prediction}
-#'   \item{\code{theoretical_plba}}{Computes the theoretical CDF for model
+#'   \item{`theoretical_plba`}{Computes the theoretical CDF for model
 #' validation and comparison with empirical data}
 #' }
 #'
@@ -246,110 +245,162 @@ NULL
 #' #-------------------------------------------------#
 #' # Example 1: theoretical_dlba and theoretical_plba
 #' #-------------------------------------------------#
-#' # Tiny helper to build the parameter matrix
-#' # (rows = A, b, mean_v, sd_v, st0, t0)
-#' param_list2mat <- function(x) do.call(rbind, x)
+#' # Tiny helper to build the parameter matrix (rows = A,b,mean_v,sd_v,st0,t0)
+#' param_list2mat <- function(x) t(do.call(rbind, x))
 #'
-#' params <- param_list2mat(list(
+#' param_list2mat <- function(param_list) {
+#'   n_row <- length(param_list[[1]])
+#'   n_col <- length(param_list)
+#'   out <- matrix(NA, nrow = n_row, ncol = n_col)
+#'
+#'   for (i in seq_len(n_col)) {
+#'     out[, i] <- param_list[[i]]
+#'   }
+#'   t(out)
+#' }
+#'
+#' params_tmp <- list(
 #'   A = c(0.5, 0.5),
 #'   b = c(1.0, 1.0),
 #'   mean_v = c(2.0, 1.0),
 #'   sd_v = c(1.0, 1.0),
 #'   st0 = c(0.0, 0.0),
 #'   t0 = c(0.2, 0.2)
-#' ))
-#' is_pos <- rep(TRUE, ncol(params))
+#' )
 #'
-#' # Use a coarse, short grid so it runs quickly
-#' dt <- 0.05
-#' time_param <- c(0, 2, dt)
+#' dt <- 0.01
+#' min_dt <- 0
+#' max_dt <- 5
+#' DT <- seq(min_dt, max_dt, dt)
 #'
-#' # Theoretical densities/cdfs for two accumulators
-#' pdfs <- theoretical_dlba(params, is_pos, time_param)
-#' cdfs <- theoretical_plba(params, is_pos, time_param)
+#' time_parameter_r <- c(min_dt, max_dt, dt)
 #'
-#' # Combine to check mass and monotonicity quickly
-#' mass_from_pdf <- sum((pdfs[[1]] + pdfs[[2]]) * dt)
-#' tail_cdf_sum <- tail(cdfs[[1]] + cdfs[[2]], 1)
+#' params <- param_list2mat(params_tmp)
+#' nv <- ncol(params)
+#' is_positive_drift <- rep(TRUE, nv)
 #'
-#' # Both should be close to 1 (within coarse-grid tolerance)
-#' round(c(mass_from_pdf = mass_from_pdf, tail_cdf_sum = tail_cdf_sum), 3)
+#' pdf_densities <- theoretical_dlba(
+#'   params, is_positive_drift, time_parameter_r
+#' )
 #'
-#' # Spot-check dlba/plba at a few RTs (shifted by t0)
-#' RT <- c(0.25, 0.50, 0.75) + params[6, 1]
-#' pl <- plba(RT, params, is_pos, time_param)
-#' head(pl[[1]])
 #'
-#' ## ---- Extended (plots; only in interactive sessions) --------------------
-#' @examplesIf interactive()
-#' {
-#'   oldpar <- par(no.readonly = TRUE)
-#'   on.exit(par(oldpar), add = TRUE)
+#' cdf_densities <- theoretical_plba(
+#'   params, is_positive_drift, time_parameter_r
+#' )
 #'
-#'   # Reuse objects from above; create a denser grid for nicer plots
-#'   dt2 <- 0.01
-#'   time_param2 <- c(0, 5, dt2)
-#'   DT <- seq(time_param2[1], time_param2[2], by = time_param2[3])
 #'
-#'   pdfs2 <- theoretical_dlba(params, is_pos, time_param2)
-#'   cdfs2 <- theoretical_plba(params, is_pos, time_param2)
-#'   pdf_all <- (pdfs2[[1]] + pdfs2[[2]]) * dt2
-#'   cdf_all <- cdfs2[[1]] + cdfs2[[2]]
+#' pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
+#' cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
+#' res1 <- cumsum(pdf_all)
+#' res2 <- cdf_all
 #'
-#'   par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
-#'   # PDF
-#'   plot(DT, pdfs2[[1]] * dt2,
-#'     type = "l",
-#'     xlab = "DT", ylab = "Density", main = "Theoretical PDF"
-#'   )
-#'   lines(DT, pdfs2[[2]] * dt2, lty = 2)
-#'   legend("topright", legend = c("Acc 1", "Acc 2"), lty = c(1, 2), bty = "n")
+#' res3 <- res1[length(pdf_all)]
+#' res4 <- cdf_all[length(cdf_all)]
+#' cat("The cumulative densities, [PDF, CDF] = [", res3, ", ", res4, "]\n")
 #'
-#'   # Cumulated PDF vs CDF
-#'   plot(DT, cumsum(pdf_all),
-#'     type = "l",
-#'     xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF",
-#'     ylim = c(0, 1)
-#'   )
-#'   lines(DT, cdf_all, lty = 2)
-#'   legend("bottomright",
-#'     legend = c("Cumulated PDF", "CDF"),
-#'     lty = c(1, 2), bty = "n"
-#'   )
+#' d_pdf <- data.frame(
+#'   x = rep(DT, 2), y = c(
+#'     pdf_densities[[1]] * dt,
+#'     pdf_densities[[2]] * dt
+#'   ),
+#'   gp = rep(c("Accumulator 1", "Accumulator 2"), each = length(DT))
+#' )
 #'
-#'   # Optional: grid-comparison for plba
-#'   RT2 <- seq(0, 3, by = 0.002) + params[6, 1]
-#'   c1 <- plba(RT2, params, is_pos, c(0, 10, 0.01))
-#'   c2 <- plba(RT2, params, is_pos, c(0, 5, 0.10))
-#'   c3 <- plba(RT2, params, is_pos, c(0, 5, 0.20))
+#' d_cdf <- data.frame(
+#'   x = rep(DT, 2), y = c(res1, res2),
+#'   gp = rep(c("Cumulated PDF", "CDF"), each = length(DT))
+#' )
+#' # Compute theoretical densities
+#' pdf_densities <- theoretical_dlba(
+#'   params, is_positive_drift,
+#'   time_parameter_r
+#' )
+#' cdf_densities <- theoretical_plba(
+#'   params, is_positive_drift,
+#'   time_parameter_r
+#' )
+#' pdf_all <- pdf_densities[[1]] * dt + pdf_densities[[2]] * dt
+#' cdf_all <- cdf_densities[[1]] + cdf_densities[[2]]
+#' res1 <- cumsum(pdf_all)
+#' res2 <- cdf_all
+#' res3 <- res1[length(pdf_all)]
+#' res4 <- cdf_all[length(cdf_all)]
+#' cat("The cumulative densities, [PDF, CDF] = [", res3, ", ", res4, "]\n")
 #'
-#'   # Okabe–Ito color-blind–safe palette
-#'   col1 <- "#0072B2" # dt=0.01
-#'   col2 <- "#D55E00" # dt=0.1
-#'   col3 <- "#009E73" # dt=0.2
+#' oldpar <- par(no.readonly = TRUE)
+#' on.exit(par(oldpar), add = TRUE)
 #'
-#'   par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
-#'   plot(RT2, c1[[1]],
-#'     type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
-#'     main = "LBA CDF Estimates under Different Time Grids", lwd = 2,
-#'     col = col1
-#'   )
-#'   lines(RT2, c1[[2]], lwd = 2, lty = 2, col = col1)
+#' ## --- Example 1 plotting ---
+#' par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
 #'
-#'   lines(RT2, c2[[1]], lwd = 2, col = col2)
-#'   lines(RT2, c2[[2]], lwd = 2, lty = 2, col = col2)
-#'   lines(RT2, c3[[1]], lwd = 2, col = col3)
-#'   lines(RT2, c3[[2]], lwd = 2, lty = 2, col = col3)
-#'   legend("bottomright",
-#'     legend = c(
-#'       "Acc1 (dt=0.01)", "Acc2 (dt=0.01)",
-#'       "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
-#'       "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"
-#'     ),
-#'     col = c(col1, col1, col2, col2, col3, col3),
-#'     lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n"
-#'   )
-#' }
+#' # PDF
+#' plot(DT, pdf_densities[[1]] * dt,
+#'   type = "l", col = "blue",
+#'   ylim = c(0, max(pdf_all)), xlab = "DT", ylab = "Density",
+#'   main = "Theoretical PDF"
+#' )
+#' lines(DT, pdf_densities[[2]] * dt, col = "red")
+#' legend("topright",
+#'   legend = c("Accumulator 1", "Accumulator 2"),
+#'   col = c("blue", "red"), lty = 1, bty = "n"
+#' )
+#'
+#' # CDF
+#' plot(DT, res1,
+#'   type = "l", col = "blue", ylim = c(0, 1),
+#'   xlab = "DT", ylab = "Cumulative", main = "Cumulated PDF and CDF"
+#' )
+#' lines(DT, res2, col = "red")
+#' legend("bottomright",
+#'   legend = c("Cumulated PDF", "CDF"),
+#'   col = c("blue", "red"), lty = 1, bty = "n"
+#' )
+#'
+#' ## --- Example 2: plba ---
+#' # Parameter setup
+#' params_tmp <- list(
+#'   A = c(0.5, 0.5),
+#'   b = c(1.0, 1.0),
+#'   mean_v = c(2.0, 1.0),
+#'   sd_v = c(1.0, 1.0),
+#'   st0 = c(0.0, 0.0),
+#'   t0 = c(0.2, 0.2)
+#' )
+#' params <- param_list2mat(params_tmp)
+#' nv <- ncol(params)
+#' is_positive_drift <- rep(TRUE, nv)
+#' # Response times (shifted by non-decision time)
+#' RT <- seq(0, 3, 0.001) + params[6, 1]
+#'
+#' # Different dt setups
+#' time_param1 <- c(0, 10, 0.01)
+#' time_param2 <- c(0, 5, 0.1)
+#' time_param3 <- c(0, 5, 0.2)
+#' cdf1 <- plba(RT, params, is_positive_drift, time_param1)
+#' cdf2 <- plba(RT, params, is_positive_drift, time_param2)
+#' cdf3 <- plba(RT, params, is_positive_drift, time_param3)
+#'
+#' ## --- Example 2 plotting ---#
+#' par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
+#' plot(RT, cdf1[[1]],
+#'   type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
+#'   main = "LBA CDF Estimates under Different Time Grids", col = "black",
+#'   lwd = 2
+#' )
+#' lines(RT, cdf1[[2]], col = "black", lwd = 2, lty = 2)
+#' lines(RT, cdf2[[1]], col = "red", lwd = 2)
+#' lines(RT, cdf2[[2]], col = "red", lwd = 2, lty = 2)
+#' lines(RT, cdf3[[1]], col = "blue", lwd = 2)
+#' lines(RT, cdf3[[2]], col = "blue", lwd = 2, lty = 2)
+#' legend("bottomright",
+#'   legend = c(
+#'     "Acc1 (dt=0.01)", "Acc2 (dt=0.01)",
+#'     "Acc1 (dt=0.1)", "Acc2 (dt=0.1)",
+#'     "Acc1 (dt=0.2)", "Acc2 (dt=0.2)"
+#'   ),
+#'   col = c("black", "black", "red", "red", "blue", "blue"),
+#'   lty = c(1, 2, 1, 2, 1, 2), lwd = 2, bty = "n"
+#' )
 NULL
 
 
@@ -482,11 +533,11 @@ NULL
 #'
 #' set.seed(seed)
 #' # R interface
-#' result1 <- rlba(params, is_positive_drift, time_parameter_r, n,
+#' result1 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r, n,
 #'   seed = seed, debug = TRUE
 #' )
 #' # C++ interface. No seed argument.
-#' result2 <- rlba_r(params, is_positive_drift, time_parameter_r, n,
+#' result2 <- lbaModel::rlba_r(params, is_positive_drift, time_parameter_r, n,
 #'   debug = TRUE
 #' )
 #'

@@ -2,12 +2,13 @@
 #' @importClassesFrom ggdmcPrior prior
 NULL
 
-#' An S4 Class of the 'lba' Object
+#' An S4 Class of the \code{lba} Object
 #'
 #' @description
-#' The lba class represents an LBA model with slots for model specification,
-#' population distribution, and other necessary components. The setLBA function
-#' is the constructor for creating lba objects.
+#' The \code{lba} class represents an LBA model with slots for model
+#' specification, population distribution, and other necessary components.
+#' The \code{setLBA} function is the constructor for creating \code{lba}
+#' objects.
 #'
 #' @slot model A model object containing the model specification
 #' @slot population_distribution The population distribution for parameters
@@ -19,7 +20,7 @@ NULL
 #'
 #' @param model A model object containing the model specification
 #' @param population_distribution Optional population distribution for
-#' parameters (default NULL)
+#' parameters (default \code{NULL})
 #' @param is_positive_drift a Boolean value indicating whether to use strictly
 #' positive drift rates
 #'
@@ -93,8 +94,7 @@ setLBA <- function(
   # Returns validated matrix or NULL if max attempts reached
 
   n_subject <- nrow(parameter_matrix)
-  # n_params <- ncol(parameter_matrix)
-  # param_names <- colnames(parameter_matrix)
+
 
   all_valid <- rep(FALSE, n_subject)
   for (i in seq_len(n_subject)) {
@@ -263,7 +263,7 @@ setLBA <- function(
 
 #' Simulate Data from an LBA Model
 #'
-#' Simulate response times and choices from a Linear Ballistic Accumulator
+#' Simulate response times and choices from a Linear Ballistic Accumulation
 #' (LBA) model with a model specification (typically from
 #' \code{ggdmcModel::BuildModel}).
 #'
@@ -275,38 +275,37 @@ setLBA <- function(
 #' Defaults to \code{NULL}.
 #' @param n_subject Integer. Number of subjects to simulate. Defaults to
 #' \code{3}.
-#' @param parameter_vector A named vector or list of parameters
-#' (e.g., \code{A}, \code{b}, \code{mean_v.true}, \code{t0}). The user must
-#' supply either a parameter_vector (here) or a population distribution
-#' (via \code{setLBA}). The population distribution is defined typically
-#' via \code{BuildPrior} of the \code{ggdmcPrior} package. The default value,
-#' thus, is set to \code{NULL} here.
+#' @param parameter_vector A named vector or list of parameters (e.g., \code{A},
+#' \code{b}, \code{mean_v.true}, \code{t0}). Supply either
+#' \code{parameter_vector} here or a population distribution via \code{setLBA}
+#' (typically built with \code{ggdmcPrior::BuildPrior}). Defaults to
+#' \code{NULL}.
 #' @param use_inverse_method Logical. If \code{TRUE}, use inverse transform
 #' sampling; otherwise use the process model to sample. Defaults to
 #' \code{FALSE}.
 #' @param debug Logical. If \code{TRUE}, print debugging output during
 #' simulation. Defaults to \code{FALSE}.
 #'
-#' @return A data frame containing simulated data. The standard columns include:
+#' @return A data frame with:
 #' \itemize{
-#' \item \code{s} (lowercase): subject identifiers
-#' \item \code{R} (uppercase): choices
-#' \item \code{RT}: response times
+#' \item \code{s} (lowercase): subject identifiers (factor)
+#' \item \code{R} (uppercase): choices (integer/character)
+#' \item \code{RT}: response times (numeric)
 #' }
-#' In addition, the data frame includes user-defined condition
-#' columns derived from the analysed \code{model} object.
-#'
-#' Note: the internal mechansim is case sensitive. The choice of
-#' using upper- or lowercase letters to denote variables is
-#' a convention (originated from \code{DMC}), rather than a strict
-#' requirment.
+#' Plus user-defined condition columns derived from the model
 #'
 #' @details
-#' This method simulates data from a design-based Linear Ballistic
-#'  Accumulator (LBA) model. You can simulate multiple subjects,
-#' override default parameters, and choose between standard and
-#' inverse sampling methods. Turn on debugging mode by enterinig TRUE to
-#' the option, \code{debug}.
+#' This method simulates data from a design-based LBA model. You
+#' can simulate multiple subjects, override default parameters,
+#' and choose between standard and inverse sampling methods.
+#' Turn on debugging mode by entering \code{TRUE} to the
+#' option, \code{debug}.
+#'
+#' @section Notes:
+#' The internal mechanism is case sensitive. The choice of
+#' using upper- or lowercase letters to denote variables is
+#' a convention (originated from \code{DMC}), rather than a strict
+#' requirement.
 #'
 #' @examples
 #' if (requireNamespace("ggdmcModel", quietly = TRUE)) {
@@ -335,8 +334,15 @@ setLBA <- function(
 #' )
 #' head(sim_dat)
 #'
+#' @seealso
+#' \code{\link{simulate_lba_trials}} (low-level C++ back end),
+#' \code{\link{theoretical_dlba}}, \code{\link{plba}}, \code{\link{dlba}}
+#'
+#' @name simulate_lba
+#' @aliases simulate,lba-method simulate simulate-lba
+#' @rdname simulate_lba
+#' @family LBA simulation
 #' @export
-#' @method simulate lba
 setMethod(
   "simulate", signature(object = "lba"),
   function(object, nsim = 4L, seed = NULL, n_subject = 3L,
@@ -364,8 +370,6 @@ setMethod(
       param_matrix <- t(sapply(seq_len(n_subject), function(i) {
         matrix(name_sorted_p_vector, nrow = 1, ncol = object@model@npar)
       }))
-
-      # print(param_matrix)
     } else {
       # (!is.null(object@population_distribution)) {
       param_matrix <- .prepare_parameter_matrix(
@@ -384,9 +388,6 @@ setMethod(
     }
 
 
-    # cat("After .validate_parameters")
-    # print(param_matrix)
-
     # --- Simulation ---
     ## Calculate trials per cell with warning if uneven division
     if (nsim %% ncell == 0) {
@@ -399,9 +400,6 @@ setMethod(
     }
 
     message("\n[n_trial per condition, n_trial]: [", n_trial_per_cell, ", ", nsim, "]")
-
-    # cat("Going to simulate_lba_trials")
-    # print(param_matrix[1, ])
 
     #--- Seed Handling ---
     # Generate seeds based on number of cores

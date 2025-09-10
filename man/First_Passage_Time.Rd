@@ -32,21 +32,21 @@ times.
 }
 \description{
 The functions, \code{fptpdf}, \code{fptcdf}, and \code{n1PDF}, calculate
-first passage time distributions for Linear Ballistic Accumulation models.
-This includs the probability density function \code{fptpdf}, the
+first passage time distributions for the Linear Ballistic Accumulation model.
+This includes the probability density function \code{fptpdf}, the
 cumulative distribution function \code{fptcdf}, and the node 1 density
 function, \code{n1PDF}.
 }
 \details{
 The three functions, respectively, are designed to:
 \itemize{
-  \item \code{fptpdf}: Calculates the probability density function for
-                       (PDF; 1 accumulator).
-  \item \code{fptcdf}: Calculates the cumulative distribution function
-                       (CDF; 1 accumulator).
-  \item \code{n1PDF}: Calculates the node 1 PDF for the multi-accumulator
-                      LBA model freeing the non-decision time. 'node 1'
-refers to the accumulator passing the threshold first.
+\item \code{fptpdf}: Calculates the probability density function for
+(PDF; 1 accumulator).
+\item \code{fptcdf}: Calculates the cumulative distribution function
+(CDF; 1 accumulator).
+\item \code{n1PDF}: Calculates the node 1 PDF for the multi-accumulator
+LBA model freeing the non-decision time.
+\strong{node 1} refers to the accumulator passing the threshold first.
 }
 }
 \examples{
@@ -70,7 +70,8 @@ if (requireNamespace("ggdmcModel", quietly = TRUE)) {
   )
 }
 
-#---------------------------------------
+
+#---------------------------------------#
 pop_mean <- c(
   A = .4, B = 1.6, mean_v.true = 3.5, mean_v.false = 2.38,
   t0 = 0.05
@@ -93,7 +94,7 @@ if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
   )
 }
 
-#---------------------------------------
+#---------------------------------------#
 rt_model <- setLBA(model, population_distribution = pop_dist)
 res_process_model <- simulate(rt_model)
 res_inverse_method <- simulate(rt_model, use_inverse_method = TRUE)
@@ -143,13 +144,13 @@ print(params)
 
 n_acc <- 2
 is_positive_drift <- rep(TRUE, n_acc)
-res <- lbaModel::n1PDF(res_process_model$RT, params, is_positive_drift, TRUE)
+res <- n1PDF(res_process_model$RT, params, is_positive_drift, TRUE)
 cat("Print first 30 density values from the LBA node 1 function: \n")
 print(head(round(res, 2), 30))
 
-#############################
+#----------------------------#
 # fptpdf computes only 1 RT
-#############################
+#----------------------------#
 mean_v <- 2.4
 A <- 1.2
 b <- 2.7
@@ -174,9 +175,9 @@ params_mat <- param_list2mat(params)
 RT <- 0.3
 result <- fptpdf(RT, params_mat, is_positive_drift, TRUE)
 
-########################################
+#---------------------------------------#
 # fptpdf and fptcdf computes a range RTs
-########################################
+#---------------------------------------#
 RT <- seq(0, 10, .01) + t0
 result1 <- fptpdf(RT, params_mat, is_positive_drift)
 result2 <- fptcdf(RT, params_mat, is_positive_drift)

@@ -4,7 +4,7 @@
 \name{lba-class}
 \alias{lba-class}
 \alias{setLBA}
-\title{An S4 Class of the 'lba' Object}
+\title{An S4 Class of the \code{lba} Object}
 \usage{
 setLBA(model, population_distribution = NULL, is_positive_drift = TRUE)
 }
@@ -12,7 +12,7 @@ setLBA(model, population_distribution = NULL, is_positive_drift = TRUE)
 \item{model}{A model object containing the model specification}
 
 \item{population_distribution}{Optional population distribution for
-parameters (default NULL)}
+parameters (default \code{NULL})}
 
 \item{is_positive_drift}{a Boolean value indicating whether to use strictly
 positive drift rates}
@@ -27,9 +27,10 @@ An object of class lba containing:
 }
 }
 \description{
-The lba class represents an LBA model with slots for model specification,
-population distribution, and other necessary components. The setLBA function
-is the constructor for creating lba objects.
+The \code{lba} class represents an LBA model with slots for model
+specification, population distribution, and other necessary components.
+The \code{setLBA} function is the constructor for creating \code{lba}
+objects.
 }
 \details{
 The LBA model is a popular decision-making model that assumes evidence

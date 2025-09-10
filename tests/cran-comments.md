@@ -49,3 +49,34 @@
 - Tested on Windows and Fedora Linux 38 [R Under Development (Unstable) (2025-09-02 r88773)] and macOS-arm64 (GitHub Action via rhub).
 - Uses Rcpp/RcppArmadillo; System Requirements: C++17.
 - Locally check, R CMD check: 0 errors | 0 warnings | 0 notes (new submission).
+
+Fix the significant warnings: "Using fallback compilation with Armadillo 14.6.3. Please consider defining -DARMA_USE_CURRENT." by adding "PKG_CPPFLAGS = -DARMA_USE_CURRENT" in src/Makevars.
+
+The examples in the help document, 'lba_distributions' in the file, lbaModel.R
+were replaced by "@examplesIf interactive()...", as in
+
+#' @examplesIf interactive()
+#' {
+#'   oldpar <- par(no.readonly = TRUE)
+#'   on.exit(par(oldpar), add = TRUE)
+#'   ...
+#'
+#'   par(mfrow = c(2, 1), mar = c(5, 5, 2, 1))
+#'   # PDF
+#'   plot(DT, pdfs2[[1]] * dt2,
+#'     type = "l",
+#'     xlab = "DT", ylab = "Density", main = "Theoretical PDF"
+#'   )
+#' ...
+#'
+#'   par(mfrow = c(1, 1), mar = c(5, 5, 2, 2))
+#'   plot(RT2, c1[[1]],
+#'     type = "l", ylim = c(0, 1), xlab = "RT", ylab = "CDF",
+#'     main = "LBA CDF Estimates under Different Time Grids", lwd = 2,
+#'     col = col1
+#'   )
+#' ...
+#' }
+
+to reset the par() back to user's options().
+

@@ -29,12 +29,12 @@ rlba(
 corresponds to an accumulator, and each row corresponds to a parameter,
 with the expected order being:
 \itemize{
-  \item \code{A} - Starting point variability
-  \item \code{b} - Thresholds
-  \item \code{mean_v} - Mean drift rates
-  \item \code{sd_v} - Standard deviation drift rates
-  \item \code{st0} - Variability of the non-decision
-  \item \code{t0} - Non-decision time
+\item \code{A} - Starting point variability
+\item \code{b} - Thresholds
+\item \code{mean_v} - Mean drift rates
+\item \code{sd_v} - Standard deviation drift rates
+\item \code{st0} - Variability of the non-decision
+\item \code{t0} - Non-decision time
 }}
 
 \item{is_positive_drift_r}{A logical vector indicating whether the
@@ -55,16 +55,16 @@ the standard sampling method.Defaults to
 for debugging. Defaults to \code{FALSE}.}
 
 \item{seed}{Optional integer. If provided, sets the random seed for
-            reproducible simulation. Defaults to \code{NULL}. Available
+reproducible simulation. Defaults to \code{NULL}. Available
 only in the R interface.}
 }
 \value{
 A \code{data.frame}. Each row corresponds to a simulated trial
-        containing:
+containing:
 \itemize{
-  \item \code{trial} — Trial index
-  \item \code{choice} — Index of the winning accumulator
-  \item \code{rt} — Simulated response time
+\item \code{trial} — Trial index
+\item \code{choice} — Index of the winning accumulator
+\item \code{rt} — Simulated response time
 }
 }
 \description{
@@ -124,11 +124,11 @@ time_parameter_r <- c(min_dt, max_dt, dt)
 
 set.seed(seed)
 # R interface
-result1 <- lbaModel::rlba(params, is_positive_drift, time_parameter_r, n,
+result1 <- rlba(params, is_positive_drift, time_parameter_r, n,
   seed = seed, debug = TRUE
 )
 # C++ interface. No seed argument.
-result2 <- lbaModel::rlba_r(params, is_positive_drift, time_parameter_r, n,
+result2 <- rlba_r(params, is_positive_drift, time_parameter_r, n,
   debug = TRUE
 )
 
@@ -136,4 +136,3 @@ print(result1)
 print(result2)
 
 }
-\keyword{internal}

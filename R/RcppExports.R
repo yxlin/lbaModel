@@ -21,14 +21,14 @@ n1PDF <- function(rt_r, parameter_r, is_positive_drift_r, verbose = FALSE) {
 
 #' @rdname lba_distributions
 #' @export
-dlba <- function(rt_r, parameter_r, is_positive_drift_r) {
-    .Call('_lbaModel_dlba', PACKAGE = 'lbaModel', rt_r, parameter_r, is_positive_drift_r)
+dlba <- function(rt_r, parameter_r, is_positive_drift_r, debug = FALSE) {
+    .Call('_lbaModel_dlba', PACKAGE = 'lbaModel', rt_r, parameter_r, is_positive_drift_r, debug)
 }
 
 #' @rdname lba_distributions
 #' @export
-plba <- function(rt_r, parameter_r, is_positive_drift_r, time_parameter_r) {
-    .Call('_lbaModel_plba', PACKAGE = 'lbaModel', rt_r, parameter_r, is_positive_drift_r, time_parameter_r)
+plba <- function(rt_r, parameter_r, is_positive_drift_r, time_parameter_r, debug = FALSE) {
+    .Call('_lbaModel_plba', PACKAGE = 'lbaModel', rt_r, parameter_r, is_positive_drift_r, time_parameter_r, debug)
 }
 
 #' @rdname rlba
@@ -39,14 +39,14 @@ rlba_r <- function(parameter_r, is_positive_drift_r, time_parameter_r, n = 1L, u
 
 #' @rdname lba_distributions
 #' @export
-theoretical_dlba <- function(parameter_r, is_positive_drift_r, time_parameter_r) {
-    .Call('_lbaModel_theoretical_dlba', PACKAGE = 'lbaModel', parameter_r, is_positive_drift_r, time_parameter_r)
+theoretical_dlba <- function(parameter_r, is_positive_drift_r, time_parameter_r, debug = FALSE) {
+    .Call('_lbaModel_theoretical_dlba', PACKAGE = 'lbaModel', parameter_r, is_positive_drift_r, time_parameter_r, debug)
 }
 
 #' @rdname lba_distributions
 #' @export
-theoretical_plba <- function(parameter_r, is_positive_drift_r, time_parameter_r) {
-    .Call('_lbaModel_theoretical_plba', PACKAGE = 'lbaModel', parameter_r, is_positive_drift_r, time_parameter_r)
+theoretical_plba <- function(parameter_r, is_positive_drift_r, time_parameter_r, debug = FALSE) {
+    .Call('_lbaModel_theoretical_plba', PACKAGE = 'lbaModel', parameter_r, is_positive_drift_r, time_parameter_r, debug)
 }
 
 #' @export
@@ -55,50 +55,13 @@ dlba_inverse_external <- function(rt_r, response_r, parameter_r, is_positive_dri
     .Call('_lbaModel_dlba_inverse_external', PACKAGE = 'lbaModel', rt_r, response_r, parameter_r, is_positive_drift_r, time_parameter_r)
 }
 
-#' @rdname simulate_lba_trials
+#' @rdname lba_lowlevel
 #' @export
 validate_lba_parameters <- function(rt_model_r, parameters_r, debug = FALSE) {
     .Call('_lbaModel_validate_lba_parameters', PACKAGE = 'lbaModel', rt_model_r, parameters_r, debug)
 }
 
-#' Low-Level LBA Simulation and Parameter Validation
-#'
-#' Internal functions to simulate data and validate parameter inputs for the
-#' Linear Ballistic Accumulator (LBA) model using C++ via Rcpp.
-#'
-#' @description
-#' These functions provide low-level interfaces for simulating trial-level
-#' data from an LBA model and validating parameter inputs. They are designed
-#' to be used internally by higher-level R functions and are not intended for
-#' direct end-user interaction.
-#'
-#' @param rt_model_r An S4 object defining the LBA model. Typically passed from
-#' R and contains model structure and metadata.
-#' @param parameters_r A named numeric vector of LBA parameters (e.g.,
-#' \code{A}, \code{b}, \code{v}, \code{t0}) for simulation or validation.
-#' @param n_trial Integer (default \code{1}). Number of trials to simulate
-#' @param use_inverse_method Logical. If \code{TRUE}, use inverse transform
-#' sampling; otherwise, standard sampling is used.
-#' @param debug Logical. If \code{TRUE}, prints internal diagnostics or
-#' errors during validation or simulation.
-#'
-#' @return
-#' \code{simulate_lba_trials()} returns a \code{data.frame} (as
-#' \code{Rcpp::DataFrame}) with simulated trials, including columns such as:
-#' \itemize{
-#'   \item \code{trial} — Trial index
-#'   \item \code{choice} — Accumulator index of the winning response
-#'   \item \code{rt} — Simulated response time
-#' }
-#'
-#' \code{validate_lba_parameters()} returns a logical scalar indicating whether
-#' the provided parameter vector is valid for the given model object.
-#'
-#' @examples
-#' \dontrun{
-#' # Simulating 10 trials from a model with given parameters
-#' }
-#' @keywords internal
+#' @rdname lba_lowlevel
 #' @export
 simulate_lba_trials <- function(rt_model_r, parameters_r, n_trial = 1L, use_inverse_method = FALSE, debug = FALSE) {
     .Call('_lbaModel_simulate_lba_trials', PACKAGE = 'lbaModel', rt_model_r, parameters_r, n_trial, use_inverse_method, debug)

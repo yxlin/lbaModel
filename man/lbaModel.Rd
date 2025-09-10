@@ -4,18 +4,18 @@
 \name{lbaModel}
 \alias{lbaModel-package}
 \alias{lbaModel}
-\title{The Linear Ballistic Accumulaion}
+\title{The Linear Ballistic Accumulation Model}
 \description{
 Provides density, distribution and random generation functions for the
-Linear Ballistic Accumulator (LBA) model, a widely used choice response
+Linear Ballistic Accumulation (LBA) model, a widely used choice response
 time model in cognitive psychology. The package supports model
 specifications, parameter estimation, and likelihood computation,
 facilitating simulation and statistical inference for LBA-based experiments.
 For background on the LBA model, see Brown and Heathcote (2008)
-<doi:10.1016/j.cogpsych.2007.12.002>.
+\url{doi:10.1016/j.cogpsych.2007.12.002}.
 }
 \author{
-Yi-Shin Lin <yishinlin001@gmail.com> \cr
+Yi-Shin Lin \href{mailto:yishinlin001@gmail.com}{yishinlin001@gmail.com}
 }
 \keyword{internal}
 \keyword{package}

@@ -54,21 +54,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // dlba
-Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r);
-RcppExport SEXP _lbaModel_dlba(SEXP rt_rSEXP, SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP) {
+Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, bool debug);
+RcppExport SEXP _lbaModel_dlba(SEXP rt_rSEXP, SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type rt_r(rt_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type parameter_r(parameter_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type is_positive_drift_r(is_positive_drift_rSEXP);
-    rcpp_result_gen = Rcpp::wrap(dlba(rt_r, parameter_r, is_positive_drift_r));
+    Rcpp::traits::input_parameter< bool >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(dlba(rt_r, parameter_r, is_positive_drift_r, debug));
     return rcpp_result_gen;
 END_RCPP
 }
 // plba
-Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r);
-RcppExport SEXP _lbaModel_plba(SEXP rt_rSEXP, SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP) {
+Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r, bool debug);
+RcppExport SEXP _lbaModel_plba(SEXP rt_rSEXP, SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -76,7 +77,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type parameter_r(parameter_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type is_positive_drift_r(is_positive_drift_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type time_parameter_r(time_parameter_rSEXP);
-    rcpp_result_gen = Rcpp::wrap(plba(rt_r, parameter_r, is_positive_drift_r, time_parameter_r));
+    Rcpp::traits::input_parameter< bool >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(plba(rt_r, parameter_r, is_positive_drift_r, time_parameter_r, debug));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -97,28 +99,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // theoretical_dlba
-Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r);
-RcppExport SEXP _lbaModel_theoretical_dlba(SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP) {
+Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r, bool debug);
+RcppExport SEXP _lbaModel_theoretical_dlba(SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type parameter_r(parameter_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type is_positive_drift_r(is_positive_drift_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type time_parameter_r(time_parameter_rSEXP);
-    rcpp_result_gen = Rcpp::wrap(theoretical_dlba(parameter_r, is_positive_drift_r, time_parameter_r));
+    Rcpp::traits::input_parameter< bool >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(theoretical_dlba(parameter_r, is_positive_drift_r, time_parameter_r, debug));
     return rcpp_result_gen;
 END_RCPP
 }
 // theoretical_plba
-Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r);
-RcppExport SEXP _lbaModel_theoretical_plba(SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP) {
+Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r, Rcpp::LogicalVector is_positive_drift_r, Rcpp::NumericVector time_parameter_r, bool debug);
+RcppExport SEXP _lbaModel_theoretical_plba(SEXP parameter_rSEXP, SEXP is_positive_drift_rSEXP, SEXP time_parameter_rSEXP, SEXP debugSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type parameter_r(parameter_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type is_positive_drift_r(is_positive_drift_rSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type time_parameter_r(time_parameter_rSEXP);
-    rcpp_result_gen = Rcpp::wrap(theoretical_plba(parameter_r, is_positive_drift_r, time_parameter_r));
+    Rcpp::traits::input_parameter< bool >::type debug(debugSEXP);
+    rcpp_result_gen = Rcpp::wrap(theoretical_plba(parameter_r, is_positive_drift_r, time_parameter_r, debug));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -170,11 +174,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lbaModel_fptpdf", (DL_FUNC) &_lbaModel_fptpdf, 4},
     {"_lbaModel_fptcdf", (DL_FUNC) &_lbaModel_fptcdf, 4},
     {"_lbaModel_n1PDF", (DL_FUNC) &_lbaModel_n1PDF, 4},
-    {"_lbaModel_dlba", (DL_FUNC) &_lbaModel_dlba, 3},
-    {"_lbaModel_plba", (DL_FUNC) &_lbaModel_plba, 4},
+    {"_lbaModel_dlba", (DL_FUNC) &_lbaModel_dlba, 4},
+    {"_lbaModel_plba", (DL_FUNC) &_lbaModel_plba, 5},
     {"_lbaModel_rlba_r", (DL_FUNC) &_lbaModel_rlba_r, 6},
-    {"_lbaModel_theoretical_dlba", (DL_FUNC) &_lbaModel_theoretical_dlba, 3},
-    {"_lbaModel_theoretical_plba", (DL_FUNC) &_lbaModel_theoretical_plba, 3},
+    {"_lbaModel_theoretical_dlba", (DL_FUNC) &_lbaModel_theoretical_dlba, 4},
+    {"_lbaModel_theoretical_plba", (DL_FUNC) &_lbaModel_theoretical_plba, 4},
     {"_lbaModel_dlba_inverse_external", (DL_FUNC) &_lbaModel_dlba_inverse_external, 5},
     {"_lbaModel_validate_lba_parameters", (DL_FUNC) &_lbaModel_validate_lba_parameters, 3},
     {"_lbaModel_simulate_lba_trials", (DL_FUNC) &_lbaModel_simulate_lba_trials, 5},

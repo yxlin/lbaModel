@@ -23,12 +23,12 @@ accumulators), same length as \code{rt_r}.}
 corresponds to an accumulator, and each row corresponds to a parameter,
 with the expected order being:
 \itemize{
-  \item \code{A} - Starting point variability
-  \item \code{b} - Thresholds
-  \item \code{mean_v} - Mean drift rates
-  \item \code{sd_v} - Standard deviation drift rates
-  \item \code{st0} - Variability of the non-decision
-  \item \code{t0} - Non-decision time
+\item \code{A} - Starting point variability
+\item \code{b} - Thresholds
+\item \code{mean_v} - Mean drift rates
+\item \code{sd_v} - Standard deviation drift rates
+\item \code{st0} - Variability of the non-decision
+\item \code{t0} - Non-decision time
 }}
 
 \item{is_positive_drift_r}{A logical vector indicating whether the drift
@@ -52,4 +52,3 @@ inverse transform method to compute exact LBA densities in a numerically
 stable and efficient way. The function assumes consistent input dimensions
 across all arguments.
 }
-\keyword{internal}
