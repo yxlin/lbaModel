@@ -133,40 +133,148 @@ Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
     return out;
 }
 
+#include <algorithm> // std::lower_bound
+#include <cmath>     // std::isfinite
+
 //' @rdname lba_distributions
 //' @export
 // [[Rcpp::export]]
-Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
+Rcpp::List plba(Rcpp::NumericVector rt_r,
+                Rcpp::NumericMatrix parameter_r,
                 Rcpp::LogicalVector is_positive_drift_r,
-                Rcpp::NumericVector time_parameter_r, bool debug = false)
+                Rcpp::NumericVector time_parameter_r,
+                bool debug = false)
 {
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
-
-    // std::vector<std::vector<double>> parameters =
-    //     numericMatrixToVector(parameter_r);
+    // Inputs
+    auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
     auto rt = Rcpp::as<std::vector<double>>(rt_r);
     auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
     auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    // Setting the lba_class to static will crash R session when you run this
-    // function repeatedly
+    if (time_parameter.size() != 3)
+        Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
+    const double tmin = time_parameter[0];
+    const double tmax = time_parameter[1];
+    const double dt = time_parameter[2];
+    if (!(dt > 0.0))
+        Rcpp::stop("dt must be > 0");
+    if (!(tmax >= tmin))
+        Rcpp::stop("tmax must be >= tmin");
+
+    // Model
     lba::lba_class lba;
     lba.set_parameters(parameters, is_positive_drift);
     lba.set_times(time_parameter);
-
     if (debug)
-    {
         lba.print_parameters();
+
+    // 1) Get PDFs from stable routine
+    auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
+    if (pdfs.empty())
+        return Rcpp::List(0);
+
+    const std::size_t n_acc = pdfs.size();
+    const std::size_t T = pdfs[0].size();
+    for (std::size_t a = 1; a < n_acc; ++a)
+        if (pdfs[a].size() != T)
+            Rcpp::stop("All accumulator PDF vectors must have the same length");
+
+    // 2) Integrate PDFs to CDFs (uniform grid) — safe base case
+    std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
+    for (std::size_t a = 0; a < n_acc; ++a)
+    {
+        if (T > 0)
+        {
+            double s = pdfs[a][0] * dt;
+            if (!std::isfinite(s))
+                s = 0.0;
+            cdfs[a][0] = std::max(0.0, s);
+        }
+        for (std::size_t t = 1; t < T; ++t)
+        {
+            double step = pdfs[a][t] * dt;
+            if (!std::isfinite(step))
+                step = 0.0;
+            double v = cdfs[a][t - 1] + step;
+            if (v < 0.0)
+                v = 0.0;
+            if (v > 1.0)
+                v = 1.0;
+            cdfs[a][t] = v;
+        }
     }
 
-    auto densities = lba.plba_all(rt);
+    // 3) Optional normalization (sum of terminal CDFs should be ≤ 1)
+    double total_max = 0.0;
+    for (std::size_t a = 0; a < n_acc; ++a)
+        total_max += cdfs[a].back();
+    if (debug)
+        Rcpp::Rcout << "total_max = " << total_max << "\n";
 
-    // Convert to R list
-    Rcpp::List out;
-    for (size_t i = 0; i < densities.size(); ++i)
+    if (total_max > 1.0001)
+    { // small tolerance
+        const double scale = 1.0 / total_max;
+        if (debug)
+            Rcpp::Rcout << "Normalising using the scale factor = " << scale << "\n";
+        for (std::size_t a = 0; a < n_acc; ++a)
+            for (double &v : cdfs[a])
+                v *= scale;
+    }
+
+    // 4) Interpolate onto requested RTs using the known uniform grid
+    // Construct the grid locally: t[i] = tmin + i*dt, i=0..T-1
+    // For each t query, find lower index safely and linearly interpolate.
+    Rcpp::List out(n_acc);
+    for (std::size_t a = 0; a < n_acc; ++a)
     {
-        out.push_back(Rcpp::wrap(densities[i]));
+        std::vector<double> acc_out(rt.size(), 0.0);
+
+        for (std::size_t i = 0; i < rt.size(); ++i)
+        {
+            const double t = rt[i];
+
+            if (T == 0)
+            {
+                acc_out[i] = 0.0;
+                continue;
+            }
+
+            if (t <= tmin)
+            {
+                acc_out[i] = 0.0;
+                continue;
+            }
+            const double t_last = tmin + (T - 1) * dt;
+            if (t >= t_last)
+            {
+                acc_out[i] = cdfs[a].back();
+                continue;
+            }
+
+            // Compute fractional index on uniform grid
+            double fidx = (t - tmin) / dt; // in (0, T-1)
+            std::size_t idx1 = static_cast<std::size_t>(std::floor(fidx));
+            if (idx1 >= T - 1)
+            { // clamp just in case
+                acc_out[i] = cdfs[a].back();
+                continue;
+            }
+            std::size_t idx2 = idx1 + 1;
+            double t0 = tmin + idx1 * dt;
+            double t1 = t0 + dt;
+            double c0 = cdfs[a][idx1];
+            double c1 = cdfs[a][idx2];
+
+            // linear interpolation
+            double w = (t - t0) / (t1 - t0); // (0,1)
+            acc_out[i] = c0 + (c1 - c0) * w;
+            if (acc_out[i] < 0.0)
+                acc_out[i] = 0.0;
+            if (acc_out[i] > 1.0)
+                acc_out[i] = 1.0;
+        }
+
+        out[a] = Rcpp::wrap(acc_out);
     }
 
     return out;
