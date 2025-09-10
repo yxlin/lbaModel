@@ -51,9 +51,9 @@ LBA model freeing the non-decision time.
 }
 \examples{
 
-##################
+#-------------------#
 # n1PDF example
-##################
+#-------------------#
 if (requireNamespace("ggdmcModel", quietly = TRUE)) {
   BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
 
@@ -97,7 +97,6 @@ if (requireNamespace("ggdmcPrior", quietly = TRUE)) {
 #---------------------------------------#
 rt_model <- setLBA(model, population_distribution = pop_dist)
 res_process_model <- simulate(rt_model)
-res_inverse_method <- simulate(rt_model, use_inverse_method = TRUE)
 
 param_list2mat <- function(param_list) {
   n_row <- length(param_list[[1]])

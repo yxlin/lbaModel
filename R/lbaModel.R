@@ -51,9 +51,9 @@ NULL
 #'
 #' @examples
 #'
-#' ##################
+#' #-------------------#
 #' # n1PDF example
-#' ##################
+#' #-------------------#
 #' if (requireNamespace("ggdmcModel", quietly = TRUE)) {
 #'   BuildModel <- getFromNamespace("BuildModel", "ggdmcModel")
 #'
@@ -97,7 +97,6 @@ NULL
 #' #---------------------------------------#
 #' rt_model <- setLBA(model, population_distribution = pop_dist)
 #' res_process_model <- simulate(rt_model)
-#' res_inverse_method <- simulate(rt_model, use_inverse_method = TRUE)
 #'
 #' param_list2mat <- function(param_list) {
 #'   n_row <- length(param_list[[1]])
@@ -413,7 +412,7 @@ NULL
 #' @param use_inverse_method Logical. If \code{TRUE}, use the inverse
 #'                         transform sampling method; otherwise use
 #'                         the standard sampling method.Defaults to
-#'                         \code{FALSE}.
+#'                         \code{FALSE}. TODO: fix the memory problem.
 #' @param debug Logical. If \code{TRUE}, prints detailed messages
 #'                        for debugging. Defaults to \code{FALSE}.
 #' @param seed Optional integer. If provided, sets the random seed for

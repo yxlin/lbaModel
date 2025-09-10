@@ -49,7 +49,7 @@ difference time (i.e., \code{min dt}, \code{max dt} and \code{dt}).}
 \item{use_inverse_method}{Logical. If \code{TRUE}, use the inverse
 transform sampling method; otherwise use
 the standard sampling method.Defaults to
-\code{FALSE}.}
+\code{FALSE}. TODO: fix the memory problem.}
 
 \item{debug}{Logical. If \code{TRUE}, prints detailed messages
 for debugging. Defaults to \code{FALSE}.}
