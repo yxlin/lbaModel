@@ -7,7 +7,7 @@
 [![R-CMD-check](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yxlin/lbaModel/actions/workflows/R-CMD-check.yaml)
 
 ## 🧠 Overview
-`lbaModel` provides **fast and flexible tools** for working with the **Linear Ballistic Accumulator (LBA)** model, a widely used framework in cognitive psychology and neuroscience for simulating and analysing choice and response time (RT) data.
+**`lbaModel` 0.2.9.3 (development)** provides **fast and flexible tools** for working with the **Linear Ballistic Accumulator (LBA)** model, a widely used framework in cognitive psychology and neuroscience for simulating and analysing choice and response time (RT) data.
 
 Key features:
 
