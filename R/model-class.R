@@ -223,7 +223,8 @@ setLBA <- function(
     }
   }
 
-  # If responses are provided, convert the R column into a factor with the given levels
+  # If responses are provided, convert the R column into a factor with the
+  # given levels
   if (!is.null(responses)) {
     response_level <- seq_len(length(responses))
     separated_data$R <- factor(separated_data$R,
@@ -235,11 +236,7 @@ setLBA <- function(
   return(separated_data)
 }
 
-.generate_seeds <- function(seed) {
-  #--- Seed Handling ---
-  seed <- as.integer(Sys.time()) %% 1000000
-  return(seed)
-}
+
 
 .simulate_lba_trials_r <- function(rt_model_r,
                                    parameters_r,
@@ -259,6 +256,39 @@ setLBA <- function(
     debug = debug
   )
   return(trials)
+}
+
+.handle_seed <- function(nsubject = 3L, seed = NULL) {
+  # Handle seed generation based on input
+  if (is.null(seed)) {
+    main_seed <- as.integer(Sys.time()) %% 1000000L
+  } else {
+    main_seed <- seed
+  }
+
+  set.seed(main_seed)
+  seeds <- sample.int(1e6, nsubject)
+
+  # Print header information
+  message("Simulation settings:")
+  message("---------------------")
+  message("Main seed: ", main_seed)
+  message("Number of schools: ", nsubject)
+
+  # Print seeds in a more readable format
+  if (nsubject <= 5) {
+    message("\nSeeds for each subject:")
+    for (i in seq_len(nsubject)) {
+      message("  Subject ", i, ": ", seeds[i])
+    }
+  } else {
+    message("\nSeeds for the first 5 subject:")
+    for (i in seq_len(5)) {
+      message("  Subject ", i, ": ", seeds[i])
+    }
+  }
+
+  return(list(main_seed, seeds))
 }
 
 #' Simulate Data from an LBA Model
@@ -349,17 +379,16 @@ setMethod(
            parameter_vector = NULL, use_inverse_method = FALSE, debug = FALSE) {
     #--- Checking if required arguments are provided ---
     if (is.null(object@population_distribution) && is.null(parameter_vector)) {
-      stop("Neither population_distribution (a slot in the 'lba' class) nor parameter_vector was found")
+      stop("Neither population_distribution nor parameter_vector was found")
     }
 
     if (!is.null(object@population_distribution) && !is.null(parameter_vector)) {
-      stop("You have provided both the population_distribution and the parameter_vector. Which one do you want me to use?")
+      stop("Both population_distribution and parameter_vector were provided; specify only one.")
     }
 
     ncell <- length(object@model@cell_names)
-    if (ncell == 0) {
-      stop("Number of cells (ncell) cannot be zero")
-    }
+    if (ncell == 0L) stop("Number of cells (ncell) cannot be zero")
+
 
     # --- Parameter Preparation ---
     if (!is.null(parameter_vector)) {
@@ -400,38 +429,10 @@ setMethod(
     }
 
     message("\n[n_trial per condition, n_trial]: [", n_trial_per_cell, ", ", nsim, "]")
-
-    #--- Seed Handling ---
-    # Generate seeds based on number of cores
-    if (is.null(seed)) {
-      main_seed <- as.integer(Sys.time()) %% 1000000L
-    } else {
-      main_seed <- seed
-    }
-
-    set.seed(main_seed)
-    seeds <- sample.int(1e6, n_subject)
-
-    # Print header information
-    message("Simulation settings:")
-    message("---------------------")
-    message("Main seed: ", main_seed)
-    message("Number of subjects: ", n_subject)
-
-    # Print seeds in a more readable format
-    if (n_subject <= 5) {
-      message("\nSeeds for each subject:")
-      for (i in seq_len(n_subject)) {
-        message("  Subject ", i, ": ", seeds[i])
-      }
-    } else {
-      message("\nSeeds for the first 5 subjects:")
-      for (i in seq_len(5)) {
-        message("  Subject ", i, ": ", seeds[i])
-      }
-    }
+    seed_res <- .handle_seed(n_subject, seed)
 
 
+    #--- Return result ---
     t0 <- Sys.time()
     results_list <- lapply(seq_len(n_subject), function(i) {
       trials <- .simulate_lba_trials_r(
@@ -439,7 +440,7 @@ setMethod(
         parameters_r = param_matrix[i, ],
         n_trial = as.integer(nsim),
         use_inverse_method = use_inverse_method,
-        seed = seeds[i], debug = debug
+        seed = seed_res[[2]][i], debug = debug
       )
       trials$s <- i
       trials
@@ -472,8 +473,8 @@ setMethod(
       attr(out, "parameters") <- param_matrix
     }
 
-    attr(out, "main_seed") <- main_seed
-    attr(out, "seeds") <- seeds
+    attr(out, "main_seed") <- seed_res[[1]]
+    attr(out, "seeds") <- seed_res[[2]]
     return(out)
   }
 )

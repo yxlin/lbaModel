@@ -1,39 +1,35 @@
-#include <RcppArmadillo.h>
-#include <ggdmcHeaders/lba_simulation.h>
+// #include <RcppArmadillo.h>
+// #include <ggdmcHeaders/lba_simulation.h>
+#include <ggdmcHeaders/design.h>
+#include <ggdmcHeaders/lba.h>
 #include <ggdmcHeaders/simulation_type_casting.h>
 
 /*--------------------LBA--------------------*/
-
 //' @rdname First_Passage_Time
 //' @export
 // [[Rcpp::export]]
 Rcpp::NumericVector fptpdf(Rcpp::NumericVector rt_r,
                            Rcpp::NumericMatrix parameter_r,
                            Rcpp::LogicalVector is_positive_drift_r,
-                           bool verbose = false)
-{
-    auto is_positive_drift =
-        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                           bool verbose = false) {
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    size_t n_rt = rt_r.size();
+  size_t n_rt = rt_r.size();
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    if (verbose)
-    {
-        lba.print_parameters();
-    }
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  if (verbose) {
+    lba.print_parameters();
+  }
 
-    Rcpp::NumericVector out(n_rt);
-    for (size_t i = 0; i < n_rt; ++i)
-    {
-        lba.d(rt_r[i]);
-        out[i] = lba.m_pdf;
-    }
+  Rcpp::NumericVector out(n_rt);
+  for (size_t i = 0; i < n_rt; ++i) {
+    lba.d(rt_r[i]);
+    out[i] = lba.m_pdf;
+  }
 
-    return out;
+  return out;
 }
 
 //' @rdname First_Passage_Time
@@ -42,30 +38,25 @@ Rcpp::NumericVector fptpdf(Rcpp::NumericVector rt_r,
 Rcpp::NumericVector fptcdf(Rcpp::NumericVector rt_r,
                            Rcpp::NumericMatrix parameter_r,
                            Rcpp::LogicalVector is_positive_drift_r,
-                           bool verbose = false)
-{
-    auto is_positive_drift =
-        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                           bool verbose = false) {
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    size_t n_rt = rt_r.size();
+  size_t n_rt = rt_r.size();
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    if (verbose)
-    {
-        lba.print_parameters();
-    }
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  if (verbose) {
+    lba.print_parameters();
+  }
 
-    Rcpp::NumericVector out(n_rt);
-    for (size_t i = 0; i < n_rt; ++i)
-    {
-        lba.fptcdf(rt_r[i]);
-        out[i] = lba.m_cdf;
-    }
+  Rcpp::NumericVector out(n_rt);
+  for (size_t i = 0; i < n_rt; ++i) {
+    lba.fptcdf(rt_r[i]);
+    out[i] = lba.m_cdf;
+  }
 
-    return out;
+  return out;
 }
 
 //' @rdname First_Passage_Time
@@ -74,210 +65,185 @@ Rcpp::NumericVector fptcdf(Rcpp::NumericVector rt_r,
 Rcpp::NumericVector n1PDF(Rcpp::NumericVector rt_r,
                           Rcpp::NumericMatrix parameter_r,
                           Rcpp::LogicalVector is_positive_drift_r,
-                          bool verbose = false)
-{
-    std::vector<double> rt_cpp = Rcpp::as<std::vector<double>>(rt_r);
-    auto is_positive_drift =
-        Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+                          bool verbose = false) {
+  std::vector<double> rt_cpp = Rcpp::as<std::vector<double>>(rt_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
 
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    static lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    bool is_valid = lba.validate_parameters(verbose);
+  static lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  bool is_valid = lba.validate_parameters(verbose);
 
-    if (verbose || !is_valid)
-    {
-        lba.print_parameters();
-    }
-    std::vector<double> out_cpp(rt_r.size(), 0.0);
+  if (verbose || !is_valid) {
+    lba.print_parameters();
+  }
+  std::vector<double> out_cpp(rt_r.size(), 0.0);
 
-    if (is_valid)
-    {
-        out_cpp = lba.dlba(rt_cpp);
-    }
+  if (is_valid) {
+    out_cpp = lba.dlba(rt_cpp);
+  }
 
-    return Rcpp::wrap(out_cpp);
+  return Rcpp::wrap(out_cpp);
 }
 
 //' @rdname lba_distributions
 //' @export
 // [[Rcpp::export]]
 Rcpp::List dlba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
-                Rcpp::LogicalVector is_positive_drift_r, bool debug = false)
-{
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                Rcpp::LogicalVector is_positive_drift_r, bool debug = false) {
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    auto rt = Rcpp::as<std::vector<double>>(rt_r);
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto rt = Rcpp::as<std::vector<double>>(rt_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
 
-    if (debug)
-    {
-        lba.print_parameters();
-    }
+  if (debug) {
+    lba.print_parameters();
+  }
 
-    auto densities = lba.dlba_all(rt);
+  auto densities = lba.dlba_all(rt);
 
-    // Convert to R list
-    Rcpp::List out;
-    for (size_t i = 0; i < densities.size(); ++i)
-    {
-        out.push_back(Rcpp::wrap(densities[i]));
-    }
+  // Convert to R list
+  Rcpp::List out;
+  for (size_t i = 0; i < densities.size(); ++i) {
+    out.push_back(Rcpp::wrap(densities[i]));
+  }
 
-    return out;
+  return out;
 }
-
-#include <algorithm> // std::lower_bound
-#include <cmath>     // std::isfinite
 
 //' @rdname lba_distributions
 //' @export
 // [[Rcpp::export]]
-Rcpp::List plba(Rcpp::NumericVector rt_r,
-                Rcpp::NumericMatrix parameter_r,
+Rcpp::List plba(Rcpp::NumericVector rt_r, Rcpp::NumericMatrix parameter_r,
                 Rcpp::LogicalVector is_positive_drift_r,
-                Rcpp::NumericVector time_parameter_r,
-                bool debug = false)
-{
-    // Inputs
-    auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
-    auto rt = Rcpp::as<std::vector<double>>(rt_r);
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
+                Rcpp::NumericVector time_parameter_r, bool debug = false) {
+  // Inputs
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+  auto rt = Rcpp::as<std::vector<double>>(rt_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    if (time_parameter.size() != 3)
-        Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
-    const double tmin = time_parameter[0];
-    const double tmax = time_parameter[1];
-    const double dt = time_parameter[2];
-    if (!(dt > 0.0))
-        Rcpp::stop("dt must be > 0");
-    if (!(tmax >= tmin))
-        Rcpp::stop("tmax must be >= tmin");
+  if (time_parameter.size() != 3)
+    Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
+  const double tmin = time_parameter[0];
+  const double tmax = time_parameter[1];
+  const double dt = time_parameter[2];
+  if (!(dt > 0.0))
+    Rcpp::stop("dt must be > 0");
+  if (!(tmax >= tmin))
+    Rcpp::stop("tmax must be >= tmin");
 
-    // Model
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    lba.set_times(time_parameter);
+  // Model
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  lba.set_times(time_parameter);
+  if (debug)
+    lba.print_parameters();
+
+  // 1) Get PDFs from stable routine
+  auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
+  if (pdfs.empty())
+    return Rcpp::List(0);
+
+  const std::size_t n_acc = pdfs.size();
+  const std::size_t T = pdfs[0].size();
+  for (std::size_t a = 1; a < n_acc; ++a)
+    if (pdfs[a].size() != T)
+      Rcpp::stop("All accumulator PDF vectors must have the same length");
+
+  // 2) Integrate PDFs to CDFs (uniform grid) — safe base case
+  std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
+  for (std::size_t a = 0; a < n_acc; ++a) {
+    if (T > 0) {
+      double s = pdfs[a][0] * dt;
+      if (!std::isfinite(s))
+        s = 0.0;
+      cdfs[a][0] = std::max(0.0, s);
+    }
+    for (std::size_t t = 1; t < T; ++t) {
+      double step = pdfs[a][t] * dt;
+      if (!std::isfinite(step))
+        step = 0.0;
+      double v = cdfs[a][t - 1] + step;
+      if (v < 0.0)
+        v = 0.0;
+      if (v > 1.0)
+        v = 1.0;
+      cdfs[a][t] = v;
+    }
+  }
+
+  // 3) Optional normalization (sum of terminal CDFs should be ≤ 1)
+  double total_max = 0.0;
+  for (std::size_t a = 0; a < n_acc; ++a)
+    total_max += cdfs[a].back();
+  if (debug)
+    Rcpp::Rcout << "total_max = " << total_max << "\n";
+
+  if (total_max > 1.0001) { // small tolerance
+    const double scale = 1.0 / total_max;
     if (debug)
-        lba.print_parameters();
-
-    // 1) Get PDFs from stable routine
-    auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
-    if (pdfs.empty())
-        return Rcpp::List(0);
-
-    const std::size_t n_acc = pdfs.size();
-    const std::size_t T = pdfs[0].size();
-    for (std::size_t a = 1; a < n_acc; ++a)
-        if (pdfs[a].size() != T)
-            Rcpp::stop("All accumulator PDF vectors must have the same length");
-
-    // 2) Integrate PDFs to CDFs (uniform grid) — safe base case
-    std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
+      Rcpp::Rcout << "Normalising using the scale factor = " << scale << "\n";
     for (std::size_t a = 0; a < n_acc; ++a)
-    {
-        if (T > 0)
-        {
-            double s = pdfs[a][0] * dt;
-            if (!std::isfinite(s))
-                s = 0.0;
-            cdfs[a][0] = std::max(0.0, s);
-        }
-        for (std::size_t t = 1; t < T; ++t)
-        {
-            double step = pdfs[a][t] * dt;
-            if (!std::isfinite(step))
-                step = 0.0;
-            double v = cdfs[a][t - 1] + step;
-            if (v < 0.0)
-                v = 0.0;
-            if (v > 1.0)
-                v = 1.0;
-            cdfs[a][t] = v;
-        }
+      for (double &v : cdfs[a])
+        v *= scale;
+  }
+
+  // 4) Interpolate onto requested RTs using the known uniform grid
+  // Construct the grid locally: t[i] = tmin + i*dt, i=0..T-1
+  // For each t query, find lower index safely and linearly interpolate.
+  Rcpp::List out(n_acc);
+  for (std::size_t a = 0; a < n_acc; ++a) {
+    std::vector<double> acc_out(rt.size(), 0.0);
+
+    for (std::size_t i = 0; i < rt.size(); ++i) {
+      const double t = rt[i];
+
+      if (T == 0) {
+        acc_out[i] = 0.0;
+        continue;
+      }
+
+      if (t <= tmin) {
+        acc_out[i] = 0.0;
+        continue;
+      }
+      const double t_last = tmin + (T - 1) * dt;
+      if (t >= t_last) {
+        acc_out[i] = cdfs[a].back();
+        continue;
+      }
+
+      // Compute fractional index on uniform grid
+      double fidx = (t - tmin) / dt; // in (0, T-1)
+      std::size_t idx1 = static_cast<std::size_t>(std::floor(fidx));
+      if (idx1 >= T - 1) { // clamp just in case
+        acc_out[i] = cdfs[a].back();
+        continue;
+      }
+      std::size_t idx2 = idx1 + 1;
+      double t0 = tmin + idx1 * dt;
+      double t1 = t0 + dt;
+      double c0 = cdfs[a][idx1];
+      double c1 = cdfs[a][idx2];
+
+      // linear interpolation
+      double w = (t - t0) / (t1 - t0); // (0,1)
+      acc_out[i] = c0 + (c1 - c0) * w;
+      if (acc_out[i] < 0.0)
+        acc_out[i] = 0.0;
+      if (acc_out[i] > 1.0)
+        acc_out[i] = 1.0;
     }
 
-    // 3) Optional normalization (sum of terminal CDFs should be ≤ 1)
-    double total_max = 0.0;
-    for (std::size_t a = 0; a < n_acc; ++a)
-        total_max += cdfs[a].back();
-    if (debug)
-        Rcpp::Rcout << "total_max = " << total_max << "\n";
+    out[a] = Rcpp::wrap(acc_out);
+  }
 
-    if (total_max > 1.0001)
-    { // small tolerance
-        const double scale = 1.0 / total_max;
-        if (debug)
-            Rcpp::Rcout << "Normalising using the scale factor = " << scale << "\n";
-        for (std::size_t a = 0; a < n_acc; ++a)
-            for (double &v : cdfs[a])
-                v *= scale;
-    }
-
-    // 4) Interpolate onto requested RTs using the known uniform grid
-    // Construct the grid locally: t[i] = tmin + i*dt, i=0..T-1
-    // For each t query, find lower index safely and linearly interpolate.
-    Rcpp::List out(n_acc);
-    for (std::size_t a = 0; a < n_acc; ++a)
-    {
-        std::vector<double> acc_out(rt.size(), 0.0);
-
-        for (std::size_t i = 0; i < rt.size(); ++i)
-        {
-            const double t = rt[i];
-
-            if (T == 0)
-            {
-                acc_out[i] = 0.0;
-                continue;
-            }
-
-            if (t <= tmin)
-            {
-                acc_out[i] = 0.0;
-                continue;
-            }
-            const double t_last = tmin + (T - 1) * dt;
-            if (t >= t_last)
-            {
-                acc_out[i] = cdfs[a].back();
-                continue;
-            }
-
-            // Compute fractional index on uniform grid
-            double fidx = (t - tmin) / dt; // in (0, T-1)
-            std::size_t idx1 = static_cast<std::size_t>(std::floor(fidx));
-            if (idx1 >= T - 1)
-            { // clamp just in case
-                acc_out[i] = cdfs[a].back();
-                continue;
-            }
-            std::size_t idx2 = idx1 + 1;
-            double t0 = tmin + idx1 * dt;
-            double t1 = t0 + dt;
-            double c0 = cdfs[a][idx1];
-            double c1 = cdfs[a][idx2];
-
-            // linear interpolation
-            double w = (t - t0) / (t1 - t0); // (0,1)
-            acc_out[i] = c0 + (c1 - c0) * w;
-            if (acc_out[i] < 0.0)
-                acc_out[i] = 0.0;
-            if (acc_out[i] > 1.0)
-                acc_out[i] = 1.0;
-        }
-
-        out[a] = Rcpp::wrap(acc_out);
-    }
-
-    return out;
+  return out;
 }
 
 //*--------------------LBA Inverse Method--------------------*/
@@ -288,46 +254,38 @@ Rcpp::List plba(Rcpp::NumericVector rt_r,
 Rcpp::DataFrame rlba_r(Rcpp::NumericMatrix parameter_r,
                        Rcpp::LogicalVector is_positive_drift_r,
                        Rcpp::NumericVector time_parameter_r, unsigned int n = 1,
-                       bool use_inverse_method = false, bool debug = false)
-{
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                       bool use_inverse_method = false, bool debug = false) {
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
+  auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    lba.set_times(time_parameter);
-    bool is_valid = lba.validate_parameters(debug);
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  lba.set_times(time_parameter);
+  bool is_valid = lba.validate_parameters(debug);
 
-    if (debug || !is_valid)
-    {
-        lba.print_parameters();
+  if (debug || !is_valid) {
+    lba.print_parameters();
+  }
+
+  std::vector<std::pair<unsigned int, double>> trials(n);
+  if (is_valid) {
+    if (use_inverse_method) {
+      lba.r_inverse(trials);
+    } else {
+      lba.r(trials);
     }
+  }
 
-    std::vector<std::pair<unsigned int, double>> trials(n);
-    if (is_valid)
-    {
-        if (use_inverse_method)
-        {
-            lba.r_inverse(trials);
-        }
-        else
-        {
-            lba.r(trials);
-        }
-    }
+  SimulationResults results(n);
 
-    SimulationResults results(n);
+  for (const auto &trial : trials) {
+    results.add_trial(trial.first, trial.second);
+  }
 
-    for (const auto &trial : trials)
-    {
-        results.add_trial(trial.first, trial.second);
-    }
-
-    return Rcpp::DataFrame::create(Rcpp::Named("RT") = results.reaction_times,
-                                   Rcpp::Named("R") = results.responses);
+  return Rcpp::DataFrame::create(Rcpp::Named("RT") = results.reaction_times,
+                                 Rcpp::Named("R") = results.responses);
 }
 
 //' @rdname lba_distributions
@@ -335,33 +293,30 @@ Rcpp::DataFrame rlba_r(Rcpp::NumericMatrix parameter_r,
 // [[Rcpp::export]]
 Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
                             Rcpp::LogicalVector is_positive_drift_r,
-                            Rcpp::NumericVector time_parameter_r, bool debug = false)
-{
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                            Rcpp::NumericVector time_parameter_r,
+                            bool debug = false) {
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    lba.set_times(time_parameter);
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  lba.set_times(time_parameter);
 
-    if (debug)
-    {
-        lba.print_parameters();
-    }
+  if (debug) {
+    lba.print_parameters();
+  }
 
-    auto densities = lba.theoretical_dlba();
+  auto densities = lba.theoretical_dlba();
 
-    // Convert to R list
-    Rcpp::List out;
-    for (size_t i = 0; i < densities.size(); ++i)
-    {
-        out.push_back(Rcpp::wrap(densities[i]));
-    }
+  // Convert to R list
+  Rcpp::List out;
+  for (size_t i = 0; i < densities.size(); ++i) {
+    out.push_back(Rcpp::wrap(densities[i]));
+  }
 
-    return out;
+  return out;
 }
 
 //' @rdname lba_distributions
@@ -370,82 +325,75 @@ Rcpp::List theoretical_dlba(Rcpp::NumericMatrix parameter_r,
 Rcpp::List theoretical_plba(Rcpp::NumericMatrix parameter_r,
                             Rcpp::LogicalVector is_positive_drift_r,
                             Rcpp::NumericVector time_parameter_r,
-                            bool debug = false)
-{
-    // Convert inputs
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
+                            bool debug = false) {
+  // Convert inputs
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    if (time_parameter.size() != 3)
-        Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
-    const double tmin = time_parameter[0];
-    const double tmax = time_parameter[1];
-    const double dt = time_parameter[2];
-    if (!(dt > 0.0))
-        Rcpp::stop("dt must be > 0");
-    if (!(tmax >= tmin))
-        Rcpp::stop("tmax must be >= tmin");
+  if (time_parameter.size() != 3)
+    Rcpp::stop("time_parameter_r must be length 3: c(tmin, tmax, dt)");
+  const double tmin = time_parameter[0];
+  const double tmax = time_parameter[1];
+  const double dt = time_parameter[2];
+  if (!(dt > 0.0))
+    Rcpp::stop("dt must be > 0");
+  if (!(tmax >= tmin))
+    Rcpp::stop("tmax must be >= tmin");
 
-    // Set up the model (same as before)
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    lba.set_times(time_parameter);
-    if (debug)
-        lba.print_parameters();
+  // Set up the model (same as before)
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  lba.set_times(time_parameter);
+  if (debug)
+    lba.print_parameters();
 
-    // 1) Get PDFs from the stable routine
-    auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
+  // 1) Get PDFs from the stable routine
+  auto pdfs = lba.theoretical_dlba(); // [n_acc x T]
 
-    if (pdfs.empty())
-        return Rcpp::List(); // no accumulators => empty
+  if (pdfs.empty())
+    return Rcpp::List(); // no accumulators => empty
 
-    const std::size_t n_acc = pdfs.size();
-    const std::size_t T = pdfs[0].size();
-    for (std::size_t a = 1; a < n_acc; ++a)
-    {
-        if (pdfs[a].size() != T)
-            Rcpp::stop("All accumulator PDF vectors must have the same length");
+  const std::size_t n_acc = pdfs.size();
+  const std::size_t T = pdfs[0].size();
+  for (std::size_t a = 1; a < n_acc; ++a) {
+    if (pdfs[a].size() != T)
+      Rcpp::stop("All accumulator PDF vectors must have the same length");
+  }
+
+  // 2) Numerically integrate (uniform grid) to get CDFs
+  //    cdf[0] = max(0, pdf[0]*dt); cdf[t] = cdf[t-1] + pdf[t]*dt
+  std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
+
+  for (std::size_t a = 0; a < n_acc; ++a) {
+    if (T > 0) {
+      double s = pdfs[a][0] * dt;
+      if (!std::isfinite(s))
+        s = 0.0;
+      cdfs[a][0] = std::max(0.0, s);
     }
-
-    // 2) Numerically integrate (uniform grid) to get CDFs
-    //    cdf[0] = max(0, pdf[0]*dt); cdf[t] = cdf[t-1] + pdf[t]*dt
-    std::vector<std::vector<double>> cdfs(n_acc, std::vector<double>(T, 0.0));
-
-    for (std::size_t a = 0; a < n_acc; ++a)
-    {
-        if (T > 0)
-        {
-            double s = pdfs[a][0] * dt;
-            if (!std::isfinite(s))
-                s = 0.0;
-            cdfs[a][0] = std::max(0.0, s);
-        }
-        for (std::size_t t = 1; t < T; ++t)
-        {
-            double step = pdfs[a][t] * dt;
-            if (!std::isfinite(step))
-                step = 0.0;
-            double v = cdfs[a][t - 1] + step;
-            // optional clipping for numerical stability
-            if (v < 0.0)
-                v = 0.0;
-            if (v > 1.0)
-                v = 1.0;
-            cdfs[a][t] = v;
-        }
+    for (std::size_t t = 1; t < T; ++t) {
+      double step = pdfs[a][t] * dt;
+      if (!std::isfinite(step))
+        step = 0.0;
+      double v = cdfs[a][t - 1] + step;
+      // optional clipping for numerical stability
+      if (v < 0.0)
+        v = 0.0;
+      if (v > 1.0)
+        v = 1.0;
+      cdfs[a][t] = v;
     }
+  }
 
-    // 3) Return as R list
-    Rcpp::List out(n_acc);
+  // 3) Return as R list
+  Rcpp::List out(n_acc);
 
-    for (std::size_t a = 0; a < n_acc; ++a)
-    {
-        out[a] = Rcpp::wrap(cdfs[a]);
-    }
+  for (std::size_t a = 0; a < n_acc; ++a) {
+    out[a] = Rcpp::wrap(cdfs[a]);
+  }
 
-    return out;
+  return out;
 }
 
 //' @export
@@ -455,23 +403,21 @@ Rcpp::NumericVector
 dlba_inverse_external(Rcpp::NumericVector rt_r, Rcpp::IntegerVector response_r,
                       Rcpp::NumericMatrix parameter_r,
                       Rcpp::LogicalVector is_positive_drift_r,
-                      Rcpp::NumericVector time_parameter_r)
-{
-    // Compute log-likelihood for all trials
-    auto parameters =
-        r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
+                      Rcpp::NumericVector time_parameter_r) {
+  // Compute log-likelihood for all trials
+  auto parameters = r_mat_to_std_mat<Rcpp::NumericMatrix, double>(parameter_r);
 
-    auto rts = Rcpp::as<std::vector<double>>(rt_r);
-    auto responses = Rcpp::as<std::vector<unsigned int>>(response_r);
-    auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
-    auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
+  auto rts = Rcpp::as<std::vector<double>>(rt_r);
+  auto responses = Rcpp::as<std::vector<unsigned int>>(response_r);
+  auto is_positive_drift = Rcpp::as<std::vector<bool>>(is_positive_drift_r);
+  auto time_parameter = Rcpp::as<std::vector<double>>(time_parameter_r);
 
-    lba::lba_class lba;
-    lba.set_parameters(parameters, is_positive_drift);
-    lba.set_times(time_parameter);
+  lba::lba_class lba;
+  lba.set_parameters(parameters, is_positive_drift);
+  lba.set_times(time_parameter);
 
-    auto out_cpp = lba.dlba_inverse(rts, responses);
-    return Rcpp::wrap(out_cpp);
+  auto out_cpp = lba.dlba_inverse(rts, responses);
+  return Rcpp::wrap(out_cpp);
 }
 
 //' @rdname lba_lowlevel
@@ -479,40 +425,106 @@ dlba_inverse_external(Rcpp::NumericVector rt_r, Rcpp::IntegerVector response_r,
 // [[Rcpp::export]]
 bool validate_lba_parameters(const Rcpp::S4 &rt_model_r,
                              const Rcpp::NumericVector &parameters_r,
-                             bool debug = false)
-{
-    auto d_ptr = new_design_light_rt_model(rt_model_r);
-    size_t nparameter = parameters_r.size();
-    if (d_ptr->m_n_free_parameter != nparameter)
-    {
-        Rcpp::stop("Invalid parameter vector: Expected length " +
-                   std::to_string(d_ptr->m_n_free_parameter) + ", but got " +
-                   std::to_string(nparameter));
+                             bool debug = false) {
+  // auto d_ptr = new_design_light_rt_model(rt_model_r);
+  auto d_ptr = new_design_light(rt_model_r);
+  size_t nparameter = parameters_r.size();
+  if (d_ptr->m_n_free_parameter != nparameter) {
+    Rcpp::stop("Invalid parameter vector: Expected length " +
+               std::to_string(d_ptr->m_n_free_parameter) + ", but got " +
+               std::to_string(nparameter));
+  }
+
+  // TODO remove l_ptr and find m_is_positive_drift in rt_model_r;
+  auto l_ptr = new_likelihood_for_simulation(rt_model_r);
+  auto parameters = Rcpp::as<std::vector<double>>(parameters_r);
+
+  bool is_valid = false;
+  lba::lba_class lba_obj;
+
+  for (size_t cell_idx = 0; cell_idx < d_ptr->m_n_cell; ++cell_idx) {
+    d_ptr->set_parameter_values(cell_idx, parameters);
+
+    lba_obj.set_parameters(d_ptr->m_parameter_matrix[cell_idx],
+                           l_ptr->m_is_positive_drift);
+    is_valid = lba_obj.validate_parameters(debug);
+    if (!is_valid) {
+      Rcpp::Rcout << "Invalid LBA parameters at the condition, "
+                  << d_ptr->m_cell_names[cell_idx] << ": \n";
+      lba_obj.print_parameters();
+      break;
+    }
+  }
+  return is_valid;
+}
+
+void simulate_each_condition(
+    const std::shared_ptr<design::design_class> &design,
+    lba::lba_class &lba_obj, const std::vector<double> &parameters,
+    const std::vector<bool> &is_positive_drift, unsigned int n_trial_per_cell,
+    bool use_inverse_method, SimulationResults &results, bool debug) {
+  std::string prev_condition;
+  std::string node_1 = design->m_accumulator_names[0];
+  if (debug) {
+    Rcpp::Rcout << "Node 1 = " << node_1 << std::endl;
+  }
+
+  for (size_t cell_idx = 0; cell_idx < design->m_n_cell; ++cell_idx) {
+    const auto &cell_name = design->m_cell_names[cell_idx];
+    const auto [condition, accumulator, valid] = parse_cell_name(cell_name);
+
+    if (accumulator != node_1) {
+      if (debug) {
+        Rcpp::Rcout << "Verify if this is node 1...\n";
+        Rcpp::Rcout << "Current and previous conditions: " << condition << ", "
+                    << prev_condition << std::endl;
+        Rcpp::Rcout << "Current node is: " << accumulator
+                    << ", which is not the node 1, " << node_1 << "\n"
+                    << std::endl;
+      }
+      continue;
+    }
+    if (!valid || (cell_idx > 0 && condition == prev_condition)) {
+      if (debug) {
+        Rcpp::Rcout << "Verify if this condition has done before:" << std::endl;
+        Rcpp::Rcout << "Current and previous conditions:" << condition << ", "
+                    << prev_condition << std::endl
+                    << std::endl;
+      }
+
+      continue;
     }
 
-    // TODO remove l_ptr and find m_is_positive_drift in rt_model_r;
-    auto l_ptr = new_likelihood_for_simulation(rt_model_r);
-    auto parameters = Rcpp::as<std::vector<double>>(parameters_r);
+    prev_condition = condition;
 
-    bool is_valid = false;
-    lba::lba_class lba_obj;
+    design->set_parameter_values(cell_idx, parameters);
 
-    for (size_t cell_idx = 0; cell_idx < d_ptr->m_n_cell; ++cell_idx)
-    {
-        d_ptr->set_parameter_values(cell_idx, parameters);
+    lba_obj.set_parameters(design->m_parameter_matrix[cell_idx],
+                           is_positive_drift);
 
-        lba_obj.set_parameters(d_ptr->m_parameter_matrix[cell_idx],
-                               l_ptr->m_is_positive_drift);
-        is_valid = lba_obj.validate_parameters(debug);
-        if (!is_valid)
-        {
-            Rcpp::Rcout << "Invalid LBA parameters at the condition, "
-                        << d_ptr->m_cell_names[cell_idx] << ": \n";
-            lba_obj.print_parameters();
-            break;
-        }
+    bool is_valid = lba_obj.validate_parameters();
+    if (!is_valid) {
+      lba_obj.print_parameters("simulate_lba_trials");
+      throw std::runtime_error("Invalid paraemters");
     }
-    return is_valid;
+    if (debug) {
+      Rcpp::Rcout << "LBA model implements node 1 (current condition = "
+                  << cell_name << ") to simulate all "
+                  << design->m_n_accumulator << " possible responses\n";
+      lba_obj.print_parameters();
+    }
+
+    std::vector<std::pair<unsigned int, double>> cell_data(n_trial_per_cell);
+    if (use_inverse_method) {
+      lba_obj.r_inverse(cell_data);
+    } else {
+      lba_obj.r(cell_data);
+    }
+
+    for (const auto &trial : cell_data) {
+      results.add_trial(trial.first, trial.second, condition);
+    }
+  }
 }
 
 //' @rdname lba_lowlevel
@@ -522,24 +534,23 @@ Rcpp::DataFrame simulate_lba_trials(const Rcpp::S4 &rt_model_r,
                                     const Rcpp::NumericVector &parameters_r,
                                     unsigned int n_trial = 1L,
                                     bool use_inverse_method = false,
-                                    bool debug = false)
-{
-    // 1. Set pu a new design instance
-    auto d_ptr = new_design_light_rt_model(rt_model_r);
-    std::vector<bool> is_positive_drift = rt_model_r.slot("is_positive_drift");
+                                    bool debug = false) {
+  // 1. Set pu a new design instance
+  // auto d_ptr = new_design_light_rt_model(rt_model_r);
+  auto d_ptr = new_design_light(rt_model_r);
+  std::vector<bool> is_positive_drift = rt_model_r.slot("is_positive_drift");
 
-    // 2. Trial Distribution Setup
-    unsigned int n_condition = d_ptr->m_n_cell / d_ptr->m_n_accumulator;
-    unsigned int n_trial_per_cell = n_trial / n_condition;
+  // 2. Trial Distribution Setup
+  unsigned int n_condition = d_ptr->m_n_cell / d_ptr->m_n_accumulator;
+  unsigned int n_trial_per_cell = n_trial / n_condition;
 
-    // 3. Simulation
-    SimulationResults results(n_trial);
-    static lba::lba_class lba_obj;
-    auto parameters = Rcpp::as<std::vector<double>>(parameters_r);
+  // 3. Simulation
+  SimulationResults results(n_trial);
+  static lba::lba_class lba_obj;
+  auto parameters = Rcpp::as<std::vector<double>>(parameters_r);
 
-    simulate_each_condition(d_ptr, lba_obj, parameters, is_positive_drift,
-                            n_trial_per_cell, use_inverse_method, results,
-                            debug);
+  simulate_each_condition(d_ptr, lba_obj, parameters, is_positive_drift,
+                          n_trial_per_cell, use_inverse_method, results, debug);
 
-    return new_DataFrame(results);
+  return new_DataFrame(results);
 }

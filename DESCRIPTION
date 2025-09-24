@@ -1,8 +1,8 @@
 Package: lbaModel
 Type: Package
 Title: The Linear Ballistic Accumulation Model
-Version: 0.2.9.2
-Date: 2025-09-10  
+Version: 0.2.9.3
+Date: 2025-09-24  
 Authors@R: c(person(given = "Yi-Shin", family = "Lin", role = c("aut", "cre"), email = "yishinlin001@gmail.com"))
 Maintainer: Yi-Shin Lin <yishinlin001@gmail.com>
 Description: Provides density, distribution and random generation functions for the Linear Ballistic Accumulation (LBA) model, a widely used choice response time model in cognitive psychology. The package supports model specifications, parameter estimation, and likelihood computation, facilitating simulation and statistical inference for LBA-based experiments. For details on the LBA model, see Brown and Heathcote (2008) <doi:10.1016/j.cogpsych.2007.12.002>.
